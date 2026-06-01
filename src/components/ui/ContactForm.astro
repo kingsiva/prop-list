@@ -5,13 +5,19 @@ interface Props {
   propertyTitle?: string;
   propertyId?: string;
   class?: string;
+  flat?: boolean;
 }
 
 const {
   propertyTitle,
   propertyId,
   class: className = '',
+  flat = false,
 } = Astro.props;
+
+const formClasses = flat
+  ? `space-y-6 ${className}`
+  : `bg-white rounded-2xl border border-stone-200/60 p-8 md:p-10 shadow-md space-y-6 ${className}`;
 ---
 
 <form
@@ -19,7 +25,7 @@ const {
   method="POST"
   data-netlify="true"
   netlify-honeypot="bot-field"
-  class={`bg-white rounded-2xl border border-stone-200/60 p-8 md:p-10 shadow-md space-y-6 ${className}`}
+  class={formClasses}
 >
   <!-- Netlify Form Hidden Fields -->
   <input type="hidden" name="form-name" value="contact" />

@@ -45,6 +45,9 @@ const pageTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="manifest" href="/site.webmanifest" />
 
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer></script>
+
     <!-- Head slot for page-specific meta/SEO -->
     <slot name="head" />
   </head>

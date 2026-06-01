@@ -23,12 +23,12 @@ const testimonials = await getCollection('testimonials');
       </div>
 
       <!-- Horizontally Scrollable Cards with Snap -->
-      <div class="flex gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory no-scrollbar">
+      <div class="flex gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory no-scrollbar -mx-5 px-5 sm:mx-0 sm:px-0">
         {testimonials.map((entry) => {
           const item = entry.data;
           
           return (
-            <div class="bg-white rounded-2xl border border-stone-200/60 shadow-sm hover:shadow-md transition-shadow p-8 min-w-[310px] sm:min-w-[380px] md:max-w-[420px] snap-start shrink-0 flex flex-col justify-between relative overflow-hidden group">
+            <div class="bg-white rounded-2xl border border-stone-200/60 shadow-sm hover:shadow-md transition-shadow p-8 w-[290px] max-w-[85vw] sm:w-[380px] md:w-[420px] snap-start shrink-0 flex flex-col justify-between relative overflow-hidden group">
               <!-- Decorative Large Quotation Mark -->
               <div class="absolute -top-4 -right-2 text-stone-100 text-8xl font-serif select-none pointer-events-none group-hover:text-accent-50/70 transition-colors duration-500">
                 &ldquo;
@@ -45,7 +45,7 @@ const testimonials = await getCollection('testimonials');
                 </div>
                 
                 <!-- Review Text -->
-                <p class="text-stone-700 text-sm sm:text-base leading-relaxed font-sans mb-8 flex-1 italic relative">
+                <p class="text-stone-700 text-sm sm:text-base leading-relaxed font-sans mb-8 flex-1 italic relative whitespace-normal">
                   "{item.text}"
                 </p>
               </div>

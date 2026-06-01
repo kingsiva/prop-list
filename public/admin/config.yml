@@ -8,9 +8,7 @@ backend:
   branch: main
 
 # Netlify Identity
-site_url: https://properties.example.com
-display_url: https://properties.example.com
-logo_url: /favicon.svg
+logo_url: /favicon-32x32.png
 
 # Media
 media_folder: "src/assets/images/uploads"

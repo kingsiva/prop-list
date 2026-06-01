@@ -19,11 +19,11 @@ export const NAV_LINKS = [
 ] as const;
 
 export const PROPERTY_TYPES = [
-  { value: 'land', label: 'Land', icon: '🏞️' },
-  { value: 'house', label: 'House', icon: '🏠' },
-  { value: 'apartment', label: 'Apartment', icon: '🏢' },
-  { value: 'commercial', label: 'Commercial', icon: '🏗️' },
-  { value: 'shop', label: 'Shop', icon: '🏪' },
+  { value: 'land', label: 'Land', icon: '' },
+  { value: 'house', label: 'House', icon: '' },
+  { value: 'apartment', label: 'Apartment', icon: '' },
+  { value: 'commercial', label: 'Commercial', icon: '' },
+  { value: 'shop', label: 'Shop', icon: '' },
 ] as const;
 
 export const LISTING_TYPES = [

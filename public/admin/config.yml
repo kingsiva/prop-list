@@ -95,7 +95,7 @@ collections:
 
   # ---- LAND ----
   - name: "land"
-    label: "🏞️ Land"
+    label: "Land"
     folder: "src/content/properties"
     create: true
     slug: "{{slug}}"
@@ -192,7 +192,7 @@ collections:
 
   # ---- HOUSE ----
   - name: "house"
-    label: "🏠 Houses"
+    label: "Houses"
     folder: "src/content/properties"
     create: true
     slug: "{{slug}}"
@@ -298,7 +298,7 @@ collections:
 
   # ---- APARTMENT ----
   - name: "apartment"
-    label: "🏢 Apartments"
+    label: "Apartments"
     folder: "src/content/properties"
     create: true
     slug: "{{slug}}"
@@ -398,7 +398,7 @@ collections:
 
   # ---- COMMERCIAL ----
   - name: "commercial"
-    label: "🏗️ Commercial"
+    label: "Commercial"
     folder: "src/content/properties"
     create: true
     slug: "{{slug}}"
@@ -493,7 +493,7 @@ collections:
 
   # ---- SHOP ----
   - name: "shop"
-    label: "🏪 Shops"
+    label: "Shops"
     folder: "src/content/properties"
     create: true
     slug: "{{slug}}"
@@ -586,7 +586,7 @@ collections:
 
   # ---- TESTIMONIALS ----
   - name: "testimonials"
-    label: "⭐ Testimonials"
+    label: "Testimonials"
     folder: "src/content/testimonials"
     create: true
     slug: "{{fields.name}}"
@@ -600,7 +600,7 @@ collections:
 
   # ---- SITE SETTINGS ----
   - name: "settings"
-    label: "⚙️ Settings"
+    label: "Settings"
     files:
       - label: "Agent Profile"
         name: "agent"

@@ -1,17 +1,29 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import FeaturedListings from '../components/home/FeaturedListings.astro';
+import LatestListings from '../components/home/LatestListings.astro';
+import AgentIntro from '../components/home/AgentIntro.astro';
+import Testimonials from '../components/home/Testimonials.astro';
+import CTASection from '../components/home/CTASection.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
+import { SITE_NAME, SITE_DESCRIPTION } from '../lib/constants';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <!-- SEO tags injection -->
+  <Fragment slot="head">
+    <SEOHead
+      title={SITE_NAME}
+      description={SITE_DESCRIPTION}
+    />
+  </Fragment>
+
+  <!-- Homepage Sections -->
+  <Hero />
+  <FeaturedListings />
+  <LatestListings />
+  <AgentIntro />
+  <Testimonials />
+  <CTASection />
+</BaseLayout>

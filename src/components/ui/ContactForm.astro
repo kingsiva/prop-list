@@ -1,0 +1,104 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  propertyTitle?: string;
+  propertyId?: string;
+  class?: string;
+}
+
+const {
+  propertyTitle,
+  propertyId,
+  class: className = '',
+} = Astro.props;
+---
+
+<form
+  name="contact"
+  method="POST"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  class={`bg-white rounded-2xl border border-stone-200/60 p-8 md:p-10 shadow-md space-y-6 ${className}`}
+>
+  <!-- Netlify Form Hidden Fields -->
+  <input type="hidden" name="form-name" value="contact" />
+  
+  <p class="hidden">
+    <label>
+      Don't fill this out if you're human: <input name="bot-field" />
+    </label>
+  </p>
+
+  {propertyTitle && (
+    <input type="hidden" name="property_reference" value={`${propertyTitle} (ID: ${propertyId || 'N/A'})`} />
+  )}
+
+  <div class="space-y-5">
+    <!-- Name Field -->
+    <div>
+      <label for="form-name-input" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+        Full Name <span class="text-accent-600">*</span>
+      </label>
+      <input
+        type="text"
+        name="name"
+        id="form-name-input"
+        required
+        minlength="2"
+        placeholder="Enter your full name"
+        class="w-full bg-stone-50/50 border border-stone-200 rounded-lg px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-accent-500/10 focus:border-accent-650 transition-all duration-200 text-sm"
+      />
+    </div>
+
+    <!-- Email Field -->
+    <div>
+      <label for="form-email-input" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+        Email Address <span class="text-accent-600">*</span>
+      </label>
+      <input
+        type="email"
+        name="email"
+        id="form-email-input"
+        required
+        placeholder="Enter your email address"
+        class="w-full bg-stone-50/50 border border-stone-200 rounded-lg px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-accent-500/10 focus:border-accent-650 transition-all duration-200 text-sm"
+      />
+    </div>
+
+    <!-- Phone Field -->
+    <div>
+      <label for="form-phone-input" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+        Phone Number
+      </label>
+      <input
+        type="tel"
+        name="phone"
+        id="form-phone-input"
+        pattern="^[0-9+\s\-()]{10,20}$"
+        placeholder="e.g. +91 98765 43210"
+        class="w-full bg-stone-50/50 border border-stone-200 rounded-lg px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-accent-500/10 focus:border-accent-650 transition-all duration-200 text-sm"
+      />
+      <p class="mt-1.5 text-[10px] text-stone-400 font-medium">Optional, but helpful for quick callbacks</p>
+    </div>
+
+    <!-- Message Field -->
+    <div>
+      <label for="form-message-input" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+        Message <span class="text-accent-600">*</span>
+      </label>
+      <textarea
+        name="message"
+        id="form-message-input"
+        required
+        rows="4"
+        placeholder={propertyTitle ? `I am interested in "${propertyTitle}". Please provide more details.` : "How can we help you?"}
+        class="w-full bg-stone-50/50 border border-stone-200 rounded-lg px-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-accent-500/10 focus:border-accent-650 transition-all duration-200 text-sm resize-none"
+      ></textarea>
+    </div>
+  </div>
+
+  <Button type="submit" variant="primary" fullWidth class="font-bold py-3.5 mt-2">
+    Submit Inquiry
+  </Button>
+</form>

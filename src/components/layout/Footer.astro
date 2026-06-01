@@ -1,0 +1,74 @@
+---
+import { NAV_LINKS, SITE_NAME, SITE_DESCRIPTION, AGENT } from '../../lib/constants';
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-stone-900 text-stone-300 border-t border-stone-800">
+  <div class="container-site py-16 md:py-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+      <!-- About / Contact Col -->
+      <div class="space-y-4">
+        <h3 class="text-xl font-bold font-display text-white">
+          Premier<span class="text-accent-500 font-medium">Properties</span>
+        </h3>
+        <p class="text-sm text-stone-400 max-w-sm leading-relaxed">
+          {SITE_DESCRIPTION}
+        </p>
+        <div class="space-y-2 pt-2 text-sm">
+          <p class="flex items-center gap-2">
+            <span class="text-stone-400">Agent:</span>
+            <span class="text-white font-medium">{AGENT.name}</span>
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="text-stone-400">Phone:</span>
+            <a href={`tel:${AGENT.phone}`} class="hover:text-accent-400 transition-colors">{AGENT.phone}</a>
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="text-stone-400">Email:</span>
+            <a href={`mailto:${AGENT.email}`} class="hover:text-accent-400 transition-colors">{AGENT.email}</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Links Col -->
+      <div class="space-y-4 md:pl-12">
+        <h4 class="text-sm font-semibold uppercase tracking-wider text-white">Quick Links</h4>
+        <ul class="space-y-2.5 text-sm">
+          {NAV_LINKS.map((link) => (
+            <li>
+              <a href={link.href} class="hover:text-white transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href="/admin/" class="hover:text-white transition-colors">
+              CMS Admin
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Legal & Office Col -->
+      <div class="space-y-4">
+        <h4 class="text-sm font-semibold uppercase tracking-wider text-white">Office Location</h4>
+        <p class="text-sm text-stone-400 leading-relaxed">
+          12, Royal Plaza, Near Collectorate Office,<br />
+          Coimbatore, Tamil Nadu - 641018
+        </p>
+        <div class="pt-4 flex gap-4 text-xs">
+          <a href="/privacy/" class="hover:text-white transition-colors">Privacy Policy</a>
+          <span class="text-stone-700">|</span>
+          <a href="/terms/" class="hover:text-white transition-colors">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-stone-800 my-12" />
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+      <p>&copy; {currentYear} {SITE_NAME}. All rights reserved.</p>
+      <p>Designed with precision. Premium Real Estate Portal.</p>
+    </div>
+  </div>
+</footer>

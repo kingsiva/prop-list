@@ -1,0 +1,514 @@
+---
+import { PROPERTY_TYPES, LISTING_TYPES } from '../../lib/constants';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  cities: string[];
+  maxPrice: number;
+}
+
+const { cities, maxPrice } = Astro.props;
+
+// Fetch unique locations dynamically for suggestion list
+const properties = await getCollection('properties');
+const uniqueLocations = [...new Set(properties.map((p) => p.data.location))]
+  .filter(Boolean)
+  .sort((a, b) => a.localeCompare(b));
+---
+
+<div class="space-y-6 bg-white p-6 rounded-xl border border-stone-200/60 shadow-sm" data-filter-panel>
+  <!-- Header with Reset -->
+  <div class="flex items-center justify-between pb-4 border-b border-stone-100">
+    <h3 class="text-base font-bold font-display text-stone-900 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-stone-500">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+      </svg>
+      <span>Filter Properties</span>
+    </h3>
+    <button
+      type="button"
+      id="filter-reset-btn"
+      class="text-xs font-bold text-accent-700 hover:text-accent-800 transition-colors cursor-pointer"
+    >
+      Reset All
+    </button>
+  </div>
+
+  <!-- Filter: Listing Type (Buy / Rent) -->
+  <div class="space-y-2">
+    <span class="block text-xs font-bold text-stone-400 uppercase tracking-wider">Listing Type</span>
+    <div class="grid grid-cols-3 gap-2 bg-stone-50 p-1 rounded-lg border border-stone-100">
+      <label class="cursor-pointer text-center">
+        <input
+          type="radio"
+          name="filter-listing-type"
+          value="all"
+          checked
+          class="peer sr-only"
+        />
+        <span class="block py-1.5 text-xs font-bold text-stone-500 rounded peer-checked:bg-white peer-checked:text-stone-900 peer-checked:shadow-sm hover:text-stone-800 transition-all">
+          Any
+        </span>
+      </label>
+      <label class="cursor-pointer text-center">
+        <input
+          type="radio"
+          name="filter-listing-type"
+          value="buy"
+          class="peer sr-only"
+        />
+        <span class="block py-1.5 text-xs font-bold text-stone-500 rounded peer-checked:bg-white peer-checked:text-stone-900 peer-checked:shadow-sm hover:text-stone-800 transition-all">
+          Buy
+        </span>
+      </label>
+      <label class="cursor-pointer text-center">
+        <input
+          type="radio"
+          name="filter-listing-type"
+          value="rent"
+          class="peer sr-only"
+        />
+        <span class="block py-1.5 text-xs font-bold text-stone-500 rounded peer-checked:bg-white peer-checked:text-stone-900 peer-checked:shadow-sm hover:text-stone-800 transition-all">
+          Rent
+        </span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Filter: Property Type -->
+  <div class="space-y-2">
+    <label for="filter-property-type" class="block text-xs font-bold text-stone-400 uppercase tracking-wider">Property Type</label>
+    <select
+      id="filter-property-type"
+      class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-accent-500 font-medium"
+    >
+      <option value="all">All Types</option>
+      {PROPERTY_TYPES.map((type) => (
+        <option value={type.value}>
+          {type.label}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <!-- Filter: City / Location -->
+  <div class="space-y-2">
+    <label for="filter-city" class="block text-xs font-bold text-stone-400 uppercase tracking-wider">City</label>
+    <select
+      id="filter-city"
+      class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-accent-500 font-medium"
+    >
+      <option value="all">All Cities</option>
+      {cities.map((city) => (
+        <option value={city.toLowerCase()}>{city}</option>
+      ))}
+    </select>
+  </div>
+
+  <!-- Filter: Location Search -->
+  <div class="space-y-2 relative" data-keyword-search-container data-locations={JSON.stringify(uniqueLocations)}>
+    <label for="filter-keyword" class="block text-xs font-bold text-stone-400 uppercase tracking-wider">Keyword Search</label>
+    <div class="relative">
+      <input
+        type="text"
+        id="filter-keyword"
+        placeholder="e.g. Near school, highway..."
+        class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-accent-500 font-medium"
+        autocomplete="off"
+      />
+    </div>
+    <!-- Suggestions Dropdown -->
+    <div
+      id="keyword-location-dropdown"
+      class="hidden absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg overflow-hidden max-h-60 overflow-y-auto text-xs font-semibold py-1 divide-y divide-stone-100"
+    >
+    </div>
+  </div>
+
+  <!-- Filter: Price Range -->
+  <div class="space-y-3">
+    <span class="block text-xs font-bold text-stone-400 uppercase tracking-wider">Max Price (INR)</span>
+    <div class="space-y-2">
+      <input
+        type="range"
+        id="filter-price-slider"
+        min="0"
+        max={maxPrice}
+        step="50000"
+        value={maxPrice}
+        class="w-full accent-accent-600 h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer"
+      />
+      <div class="flex justify-between items-center text-xs font-semibold text-stone-500">
+        <span>₹0</span>
+        <span id="price-slider-display" class="bg-accent-50 text-accent-700 px-2 py-0.5 rounded border border-accent-100 font-bold">
+          Any Price
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter: Bedrooms -->
+  <div class="space-y-2">
+    <span class="block text-xs font-bold text-stone-400 uppercase tracking-wider">Bedrooms</span>
+    <div class="flex gap-1.5" id="filter-bedrooms-container">
+      {['all', '1', '2', '3', '4+'].map((val) => (
+        <button
+          type="button"
+          data-beds-value={val}
+          class={`flex-1 py-2 text-xs font-semibold rounded-lg border text-center transition-all cursor-pointer ${val === 'all' ? 'bg-accent-600 border-accent-600 text-white shadow-sm' : 'bg-white border-stone-200 text-stone-700 hover:border-stone-400'}`}
+        >
+          {val === 'all' ? 'Any' : val}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  // Inline script to communicate change events to the listing grid
+  function setupFilters() {
+    const panel = document.querySelector('[data-filter-panel]');
+    if (!panel) return;
+
+    const listingGrid = document.querySelector('[data-property-listing-grid]');
+    const emptyState = document.getElementById('grid-empty-state');
+    const propertyCards = document.querySelectorAll('[data-property-card]');
+    const totalCountEl = document.getElementById('properties-count');
+
+    if (!listingGrid) return;
+
+    // Filter controls
+    const propertyTypeSelect = document.getElementById('filter-property-type');
+    const citySelect = document.getElementById('filter-city');
+    const keywordInput = document.getElementById('filter-keyword');
+    const priceSlider = document.getElementById('filter-price-slider');
+    const priceDisplay = document.getElementById('price-slider-display');
+    const resetBtn = document.getElementById('filter-reset-btn');
+    const bedroomButtons = document.querySelectorAll('#filter-bedrooms-container button');
+
+    // Values state
+    let selectedListingType = 'all'; // all, buy, rent
+    let selectedBeds = 'all'; // all, 1, 2, 3, 4+
+
+    // Sync from URL params on load
+    function loadUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      
+      // 1. Listing Type
+      const urlListing = params.get('listing_type');
+      if (urlListing === 'buy' || urlListing === 'rent') {
+        selectedListingType = urlListing;
+        // Check corresponding radio
+        const radios = document.querySelectorAll('input[name="filter-listing-type"]');
+        // If "rent" was hidden/missing in component HTML grid buttons, support adding/checking it dynamically
+        // Since we had the Any / Buy / Rent layout, let's fix checkmark states:
+        let found = false;
+        radios.forEach(radio => {
+          if (radio.value === urlListing) {
+            radio.checked = true;
+            found = true;
+          }
+        });
+        // If not found in radios, check default "all"
+        if (!found) {
+          const allRadio = document.querySelector('input[name="filter-listing-type"][value="all"]');
+          if (allRadio) allRadio.checked = true;
+        }
+      }
+
+      // 2. Property Type
+      const urlType = params.get('type');
+      if (urlType && propertyTypeSelect) {
+        propertyTypeSelect.value = urlType;
+      }
+
+      // 3. Location/City keyword
+      const urlLoc = params.get('location');
+      if (urlLoc && keywordInput) {
+        keywordInput.value = urlLoc;
+      }
+    }
+
+    // Format price short form in client JS
+    function formatPriceShort(price) {
+      if (price >= 10000000) {
+        return `₹${(price / 10000000).toFixed(1).replace('.0', '')} Cr`;
+      }
+      if (price >= 100000) {
+        return `₹${(price / 100000).toFixed(1).replace('.0', '')} Lakh`;
+      }
+      return `₹${price.toLocaleString('en-IN')}`;
+    }
+
+    // Apply filtering logic
+    function applyFilters() {
+      const typeFilter = propertyTypeSelect ? propertyTypeSelect.value : 'all';
+      const cityFilter = citySelect ? citySelect.value : 'all';
+      const keywordFilter = keywordInput ? keywordInput.value.toLowerCase().trim() : '';
+      const maxPriceFilter = priceSlider ? parseFloat(priceSlider.value) : Infinity;
+
+      let visibleCount = 0;
+
+      propertyCards.forEach((card) => {
+        const cardType = card.getAttribute('data-type') || '';
+        const cardListing = card.getAttribute('data-listing') || '';
+        const cardPrice = parseFloat(card.getAttribute('data-price') || '0');
+        const cardBeds = parseInt(card.getAttribute('data-beds') || '0', 10);
+        const cardCity = (card.getAttribute('data-city') || '').toLowerCase();
+        const cardLoc = (card.getAttribute('data-location') || '').toLowerCase();
+        const cardTitle = (card.getAttribute('data-title') || '').toLowerCase();
+
+        // 1. Listing Type Match
+        const matchListing = selectedListingType === 'all' || cardListing === selectedListingType;
+
+        // 2. Property Type Match
+        const matchType = typeFilter === 'all' || cardType === typeFilter;
+
+        // 3. City Match
+        const matchCity = cityFilter === 'all' || cardCity === cityFilter;
+
+        // 4. Keyword Match (check title, location, city)
+        const matchKeyword = !keywordFilter || 
+          cardTitle.includes(keywordFilter) || 
+          cardLoc.includes(keywordFilter) || 
+          cardCity.includes(keywordFilter);
+
+        // 5. Price Match
+        const matchPrice = cardPrice <= maxPriceFilter;
+
+        // 6. Bedroom count match
+        let matchBeds = true;
+        if (selectedBeds !== 'all') {
+          if (selectedBeds === '4+') {
+            matchBeds = cardBeds >= 4;
+          } else {
+            matchBeds = cardBeds === parseInt(selectedBeds, 10);
+          }
+        }
+
+        // Combine all checks
+        if (matchListing && matchType && matchCity && matchKeyword && matchPrice && matchBeds) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      // Update count text
+      if (totalCountEl) {
+        totalCountEl.textContent = `${visibleCount} Propert${visibleCount === 1 ? 'y' : 'ies'} found`;
+      }
+
+      // Show empty state if count is 0
+      if (visibleCount === 0) {
+        emptyState?.classList.remove('hidden');
+      } else {
+        emptyState?.classList.add('hidden');
+      }
+    }
+
+    // Set up radio change event
+    document.querySelectorAll('input[name="filter-listing-type"]').forEach((radio) => {
+      radio.addEventListener('change', (e) => {
+        selectedListingType = e.target.value;
+        applyFilters();
+      });
+    });
+
+    // Set up select change events
+    propertyTypeSelect?.addEventListener('change', applyFilters);
+    citySelect?.addEventListener('change', applyFilters);
+    keywordInput?.addEventListener('input', applyFilters);
+
+    // Set up slider change event
+    if (priceSlider && priceDisplay) {
+      priceSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        if (val === parseFloat(priceSlider.max)) {
+          priceDisplay.textContent = 'Any Price';
+        } else {
+          priceDisplay.textContent = `Up to ${formatPriceShort(val)}`;
+        }
+        applyFilters();
+      });
+    }
+
+    // Set up bedroom buttons
+    bedroomButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        bedroomButtons.forEach((b) => {
+          b.classList.remove('bg-accent-600', 'border-accent-600', 'text-white', 'shadow-sm');
+          b.classList.add('bg-white', 'border-stone-200', 'text-stone-700');
+        });
+        
+        btn.classList.remove('bg-white', 'border-stone-200', 'text-stone-700');
+        btn.classList.add('bg-accent-600', 'border-accent-600', 'text-white', 'shadow-sm');
+
+        selectedBeds = btn.getAttribute('data-beds-value') || 'all';
+        applyFilters();
+      });
+    });
+
+    // Reset filters
+    resetBtn?.addEventListener('click', () => {
+      // Reset radio checked state
+      const defaultRadio = document.querySelector('input[name="filter-listing-type"][value="all"]');
+      if (defaultRadio) {
+        defaultRadio.checked = true;
+        selectedListingType = 'all';
+      }
+
+      // Reset selects & inputs
+      if (propertyTypeSelect) propertyTypeSelect.value = 'all';
+      if (citySelect) citySelect.value = 'all';
+      if (keywordInput) keywordInput.value = '';
+      
+      // Reset price slider
+      if (priceSlider) {
+        priceSlider.value = priceSlider.max;
+        if (priceDisplay) priceDisplay.textContent = 'Any Price';
+      }
+
+      // Reset beds button active state
+      bedroomButtons.forEach((btn) => {
+        const val = btn.getAttribute('data-beds-value');
+        if (val === 'all') {
+          btn.classList.remove('bg-white', 'border-stone-200', 'text-stone-700');
+          btn.classList.add('bg-accent-600', 'border-accent-600', 'text-white', 'shadow-sm');
+        } else {
+          btn.classList.remove('bg-accent-600', 'border-accent-600', 'text-white', 'shadow-sm');
+          btn.classList.add('bg-white', 'border-stone-200', 'text-stone-700');
+        }
+      });
+      selectedBeds = 'all';
+
+      // Clear search URL params cleanly
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      applyFilters();
+    });
+
+    // Execute URL loading and initial run
+    loadUrlParams();
+    applyFilters();
+  }
+
+  function initKeywordAutocomplete() {
+    const container = document.querySelector('[data-keyword-search-container]');
+    if (!container) return;
+
+    const input = container.querySelector('#filter-keyword');
+    const dropdown = container.querySelector('#keyword-location-dropdown');
+    if (!input || !dropdown) return;
+
+    const locations = JSON.parse(container.getAttribute('data-locations') || '[]');
+    let activeIndex = -1;
+
+    function renderDropdown(items) {
+      if (items.length === 0) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+      dropdown.innerHTML = items
+        .map(
+          (item, index) => `
+          <button
+            type="button"
+            data-index="${index}"
+            class="w-full text-left px-3 py-2.5 hover:bg-accent-50 hover:text-accent-800 text-stone-600 flex items-center gap-2 cursor-pointer transition-colors duration-150 font-sans"
+          >
+            <svg class="w-3.5 h-3.5 opacity-60 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            <span>${item}</span>
+          </button>
+        `
+        )
+        .join('');
+      dropdown.classList.remove('hidden');
+    }
+
+    input.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      activeIndex = -1;
+      if (!query) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+      const filtered = locations.filter((loc) => loc.toLowerCase().includes(query));
+      renderDropdown(filtered);
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (!container.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    // Click selection
+    dropdown.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (btn) {
+        const value = btn.querySelector('span').textContent;
+        input.value = value;
+        dropdown.classList.add('hidden');
+        
+        // Trigger filter change event
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+
+    // Keyboard support
+    input.addEventListener('keydown', (e) => {
+      const items = dropdown.querySelectorAll('button');
+      if (dropdown.classList.contains('hidden')) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = (activeIndex + 1) % items.length;
+        updateActiveState(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = (activeIndex - 1 + items.length) % items.length;
+        updateActiveState(items);
+      } else if (e.key === 'Enter') {
+        if (activeIndex >= 0 && activeIndex < items.length) {
+          e.preventDefault();
+          input.value = items[activeIndex].querySelector('span').textContent;
+          dropdown.classList.add('hidden');
+          
+          // Trigger filter change event
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      } else if (e.key === 'Escape') {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    function updateActiveState(items) {
+      items.forEach((item, index) => {
+        if (index === activeIndex) {
+          item.classList.add('bg-accent-50', 'text-accent-800');
+          item.classList.remove('text-stone-600');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('bg-accent-50', 'text-accent-800');
+          item.classList.add('text-stone-600');
+        }
+      });
+    }
+  }
+
+  function setupAllFilters() {
+    setupFilters();
+    initKeywordAutocomplete();
+  }
+
+  // Set up on initial load
+  document.addEventListener('DOMContentLoaded', setupAllFilters);
+  // Re-run on Astro Page Transition load
+  document.addEventListener('astro:after-swap', setupAllFilters);
+</script>

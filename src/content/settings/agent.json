@@ -1,0 +1,16 @@
+[
+  {
+    "id": "agent-profile",
+    "agent_name": "Rajesh Kumar",
+    "agent_phone": "+91 98765 43210",
+    "agent_email": "rajesh@premierproperties.in",
+    "agent_designation": "Senior Property Consultant",
+    "experience_years": 15,
+    "properties_sold": 500,
+    "bio": "With over 15 years of experience in the real estate industry, I have helped hundreds of families find their dream homes and guided investors to make smart property decisions. My deep knowledge of the local market, transparent approach, and dedication to client satisfaction set me apart. Whether you are looking for a residential property, commercial space, or prime land, I provide personalized guidance every step of the way.",
+    "whatsapp": "+919876543210",
+    "office_address": "42, Anna Salai, Teynampet",
+    "office_city": "Chennai",
+    "office_state": "Tamil Nadu"
+  }
+]

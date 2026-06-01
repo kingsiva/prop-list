@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import PropertyGrid from '../property/PropertyGrid.astro';
+import Button from '../ui/Button.astro';
+
+// Fetch properties, sort by published date descending, limit to 6
+const properties = await getCollection('properties');
+const latestProperties = properties
+  .filter((p) => p.data.status === 'available')
+  .sort((a, b) => b.data.published_date.getTime() - a.data.published_date.getTime())
+  .slice(0, 6);
+---
+
+{latestProperties.length > 0 && (
+  <section class="section-spacing bg-stone-50 border-t border-stone-200/50">
+    <div class="container-site">
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 md:mb-12">
+        <div class="space-y-2 max-w-xl">
+          <h2 class="text-3xl md:text-4xl font-bold font-display text-stone-900 tracking-tight">
+            Latest Properties
+          </h2>
+          <p class="text-stone-500 text-sm sm:text-base leading-relaxed">
+            Explore recently listed homes, commercial spaces, and lands across prime locations in Tamil Nadu.
+          </p>
+        </div>
+        
+        <div class="shrink-0 hidden md:block">
+          <Button variant="secondary" size="sm" href="/properties/">
+            Browse All Listings
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </Button>
+        </div>
+      </div>
+
+      <!-- Grid -->
+      <PropertyGrid properties={latestProperties} columns={3} />
+
+      <!-- Mobile Button -->
+      <div class="mt-8 text-center md:hidden">
+        <Button variant="secondary" size="md" href="/properties/" fullWidth>
+          Browse All Listings
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </Button>
+      </div>
+    </div>
+  </section>
+)}

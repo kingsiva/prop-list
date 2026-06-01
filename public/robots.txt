@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block admin and CMS
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://properties.example.com/sitemap-index.xml

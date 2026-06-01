@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ui/ContactForm.astro';
+import { AGENT } from '../lib/constants';
+import { Picture } from 'astro:assets';
+import officeMap from '../assets/images/office-map.png';
+import aboutHero from '../assets/images/about-hero.png';
+---
+
+<BaseLayout
+  title="Get in Touch"
+  description="Connect directly with our senior property consultant for listings, valuations, and site visits."
+>
+  <!-- Immersive Page Header Banner -->
+  <section class="relative bg-stone-950 text-white overflow-hidden py-20 md:py-28 border-b border-stone-900">
+    <!-- Grid Overlay -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+    
+    <!-- Lobby Image Backdrop Layer -->
+    <div class="absolute inset-0 z-0 select-none">
+      <Picture
+        src={aboutHero}
+        widths={[800, 1600]}
+        sizes="100vw"
+        formats={['avif', 'webp']}
+        alt="Office space overview"
+        class="w-full h-full object-cover opacity-15"
+        loading="eager"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-transparent"></div>
+    </div>
+
+    <div class="relative z-10 container max-w-5xl mx-auto px-4">
+      <h1 class="text-4xl md:text-6xl font-black font-display tracking-tight text-white leading-tight">
+        Let's Discuss <br class="hidden sm:inline" /><span class="text-accent-400">Your Next Property</span>
+      </h1>
+      <p class="text-stone-300 text-base md:text-lg max-w-2xl mt-5 font-normal leading-relaxed">
+        Skip the corporate hierarchy. Connect directly with Senior Property Consultant Rajesh Kumar to schedule viewings, request documents, or discuss private valuations.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Interaction Area -->
+  <section class="py-16 md:py-24 bg-stone-50">
+    <div class="container max-w-5xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        
+        <!-- Info Column -->
+        <div class="lg:col-span-5 space-y-8 text-stone-600 font-normal">
+          <div class="space-y-3">
+            <h3 class="text-xl font-bold font-display text-stone-900">Direct Channels</h3>
+            <p class="text-sm leading-relaxed text-stone-555">
+              Choose your preferred coordinate method. Rajesh is available for calls and messages during standard business hours.
+            </p>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="space-y-3">
+            <!-- Call Link -->
+            <a href={`tel:${AGENT.phone}`} class="flex items-center gap-4 group p-4 bg-white rounded-xl border border-stone-200/60 hover:border-accent-500 hover:shadow-sm transition-all duration-200">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-700 font-bold group-hover:bg-accent-600 group-hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.824-1.806-5.18-4.156-6.987-6.987l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25Z" />
+                </svg>
+              </div>
+              <div>
+                <span class="block text-[10px] text-stone-400 font-bold uppercase tracking-wider">Voice Call</span>
+                <span class="block text-sm font-bold text-stone-800 mt-0.5 group-hover:text-accent-750 transition-colors">{AGENT.phone}</span>
+              </div>
+            </a>
+
+            <!-- Email Link -->
+            <a href={`mailto:${AGENT.email}`} class="flex items-center gap-4 group p-4 bg-white rounded-xl border border-stone-200/60 hover:border-accent-500 hover:shadow-sm transition-all duration-200">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-700 font-bold group-hover:bg-accent-600 group-hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+              </div>
+              <div>
+                <span class="block text-[10px] text-stone-400 font-bold uppercase tracking-wider">Email Inquiry</span>
+                <span class="block text-sm font-bold text-stone-800 mt-0.5 group-hover:text-accent-750 transition-colors truncate max-w-[190px] sm:max-w-none">{AGENT.email}</span>
+              </div>
+            </a>
+
+            <!-- WhatsApp Link -->
+            <a href={`https://wa.me/${AGENT.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group p-4 bg-white rounded-xl border border-stone-200/60 hover:border-green-500 hover:shadow-sm transition-all duration-200">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-700 font-bold group-hover:bg-green-600 group-hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.413 9.863-9.847.001-2.63-1.019-5.101-2.871-6.957C16.51 1.944 14.043.924 11.417.924c-5.446 0-9.873 4.416-9.877 9.851-.001 1.762.467 3.486 1.357 5.02L1.92 20.895l5.228-1.378zm10.74-5.698c-.294-.148-1.745-.86-2.019-.958-.273-.099-.472-.148-.671.148-.198.297-.771.959-.945 1.157-.174.198-.348.223-.642.075-.294-.148-1.243-.458-2.368-1.46-1.125-1.002-1.777-2.24-1.998-2.637-.221-.397-.024-.612.174-.76.177-.133.397-.463.595-.694.198-.231.264-.397.397-.661.132-.264.066-.496-.033-.694-.099-.198-.671-1.62-.919-2.215-.24-.579-.487-.501-.671-.51l-.571-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.745-.71 1.993-1.399.248-.688.248-1.28.174-1.399-.074-.118-.272-.218-.567-.365z" />
+                </svg>
+              </div>
+              <div>
+                <span class="block text-[10px] text-stone-400 font-bold uppercase tracking-wider">WhatsApp Chat</span>
+                <span class="block text-sm font-bold text-stone-850 mt-0.5 group-hover:text-green-700 transition-colors">Start Conversation</span>
+              </div>
+            </a>
+          </div>
+
+          <!-- Headquarters Address -->
+          <div class="pt-8 border-t border-stone-200/80 space-y-4">
+            <div class="space-y-1.5">
+              <h4 class="text-xs font-bold text-stone-400 tracking-wider uppercase">Headquarters Office</h4>
+              <p class="text-base font-bold text-stone-900 leading-snug">
+                12, Royal Plaza, Near Collectorate Office,<br />
+                Coimbatore, Tamil Nadu - 641018
+              </p>
+            </div>
+
+            <!-- Styled Map Graphic -->
+            <div class="rounded-xl overflow-hidden border border-stone-200/60 shadow-sm bg-stone-50 aspect-video relative group select-none">
+              <Picture
+                src={officeMap}
+                widths={[400, 800]}
+                sizes="(max-width: 768px) 100vw, 400px"
+                formats={['avif', 'webp']}
+                alt="Office location map near Collectorate Office, Coimbatore"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-stone-900/5 group-hover:bg-transparent transition-colors duration-300"></div>
+            </div>
+
+            <p class="text-[11px] text-stone-450 leading-relaxed font-medium">
+              * Walk-ins are accommodated by appointment only. Please contact us to schedule coordinates prior to visiting.
+            </p>
+          </div>
+        </div>
+
+        <!-- Form Column -->
+        <div class="lg:col-span-7">
+          <ContactForm class="bg-white border border-stone-200/60 shadow-md" />
+        </div>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>

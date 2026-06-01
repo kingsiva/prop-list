@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
+
+// Fetch all testimonials
+const testimonials = await getCollection('testimonials');
+---
+
+{testimonials.length > 0 && (
+  <section class="section-spacing bg-stone-50 border-t border-stone-200/30">
+    <div class="container-site">
+      <!-- Section Header -->
+      <div class="text-center max-w-xl mx-auto mb-16 space-y-4">
+        <div class="inline-flex items-center gap-1.5 text-xs font-bold text-accent-700 uppercase tracking-widest">
+          <span>Client Reviews</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold font-display text-stone-900 tracking-tight">
+          What Our Clients Say
+        </h2>
+        <p class="text-stone-500 text-sm sm:text-base leading-relaxed">
+          Read direct feedback from home owners, land buyers, and corporate partners who worked with Rajesh.
+        </p>
+      </div>
+
+      <!-- Horizontally Scrollable Cards with Snap -->
+      <div class="flex gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory no-scrollbar">
+        {testimonials.map((entry) => {
+          const item = entry.data;
+          
+          return (
+            <div class="bg-white rounded-2xl border border-stone-200/60 shadow-sm hover:shadow-md transition-shadow p-8 min-w-[310px] sm:min-w-[380px] md:max-w-[420px] snap-start shrink-0 flex flex-col justify-between relative overflow-hidden group">
+              <!-- Decorative Large Quotation Mark -->
+              <div class="absolute -top-4 -right-2 text-stone-100 text-8xl font-serif select-none pointer-events-none group-hover:text-accent-50/70 transition-colors duration-500">
+                &ldquo;
+              </div>
+
+              <div class="relative z-10 flex-1 flex flex-col">
+                <!-- Star Rating -->
+                <div class="flex gap-1 mb-6 text-amber-500">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={i < item.rating ? "currentColor" : "none"} stroke="currentColor" stroke-width="2" class="w-5 h-5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.195-.558 1.05-.558 1.245 0l1.817 5.205a1 1 0 00.95.69h5.463c.593 0 .84.755.361 1.098l-4.418 3.163a1 1 0 00-.364 1.118l1.817 5.205c.195.558-.42 1.002-.899.697l-4.418-3.163a1 1 0 00-1.17 0l-4.418 3.163c-.478.305-1.094-.139-.899-.697l1.817-5.205a1 1 0 00-.364-1.118L2.05 10.483c-.478-.343-.231-1.098.362-1.098h5.463a1 1 0 00.95-.69l1.817-5.205z" />
+                    </svg>
+                  ))}
+                </div>
+                
+                <!-- Review Text -->
+                <p class="text-stone-700 text-sm sm:text-base leading-relaxed font-sans mb-8 flex-1 italic relative">
+                  "{item.text}"
+                </p>
+              </div>
+
+              <hr class="border-stone-100 mb-6" />
+
+              <!-- Client Info -->
+              <div class="flex items-center gap-4 relative z-10">
+                {item.photo ? (
+                  <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-stone-100 shadow-sm">
+                    <Picture
+                      src={item.photo}
+                      widths={[48, 96]}
+                      sizes="48px"
+                      formats={['avif', 'webp']}
+                      alt={item.name}
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div class="w-12 h-12 rounded-full bg-accent-100 text-accent-700 font-bold text-sm flex items-center justify-center shrink-0 border border-accent-200/50 select-none font-display">
+                    {item.name.charAt(0)}
+                  </div>
+                )}
+                <div>
+                  <h4 class="font-bold text-stone-900 text-sm sm:text-base font-display leading-tight">{item.name}</h4>
+                  {item.designation && (
+                    <p class="text-stone-500 text-xs mt-0.5 font-medium">{item.designation}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  /* Hide scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

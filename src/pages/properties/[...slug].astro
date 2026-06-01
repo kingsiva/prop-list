@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import PropertyLayout from '../../layouts/PropertyLayout.astro';
+import PropertyGallery from '../../components/property/PropertyGallery.astro';
+import PropertyOverview from '../../components/property/PropertyOverview.astro';
+import PropertyFeatures from '../../components/property/PropertyFeatures.astro';
+import PropertyDetails from '../../components/property/PropertyDetails.astro';
+import PropertyMap from '../../components/property/PropertyMap.astro';
+
+// Generate static paths for all properties
+export async function getStaticPaths() {
+  const properties = await getCollection('properties');
+  return properties.map((property) => {
+    const slug = property.data.slug || property.id;
+    return {
+      params: { slug },
+      props: { property },
+    };
+  });
+}
+
+interface Props {
+  property: any; // The full content collection entry
+}
+
+const { property } = Astro.props;
+const { data } = property;
+---
+
+<PropertyLayout property={property}>
+  <!-- Image Gallery -->
+  <PropertyGallery
+    featuredImage={data.featured_image}
+    galleryImages={data.gallery_images}
+    title={data.title}
+  />
+
+  <!-- Property Key Specs Overview -->
+  <PropertyOverview property={property} />
+
+  <!-- Description Section -->
+  <div class="bg-white rounded-xl border border-stone-200/60 p-6 shadow-sm space-y-4">
+    <h2 class="text-lg font-bold font-display text-stone-900">About this Property</h2>
+    <div class="text-stone-600 text-sm sm:text-base leading-relaxed whitespace-pre-line font-normal">
+      {data.description}
+    </div>
+  </div>
+
+  <!-- Features & Amenities checklist -->
+  <PropertyFeatures property={property} />
+
+  <!-- Technical Details Table -->
+  <PropertyDetails property={property} />
+
+  <!-- Location Map -->
+  <PropertyMap
+    googleMapUrl={data.google_map_url}
+    address={data.address}
+    city={data.city}
+  />
+</PropertyLayout>

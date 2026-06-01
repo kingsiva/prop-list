@@ -1,0 +1,199 @@
+---
+import { Picture } from 'astro:assets';
+
+interface Props {
+  featuredImage: ImageMetadata;
+  galleryImages?: ImageMetadata[];
+  title: string;
+}
+
+const { featuredImage, galleryImages = [], title } = Astro.props;
+const allImages = [featuredImage, ...galleryImages];
+const hasThumbnails = allImages.length > 1;
+---
+
+<div class="gallery-container w-full" data-gallery-container>
+  <!-- Main Display Image -->
+  <div class="relative overflow-hidden rounded-xl bg-stone-100 aspect-video shadow-sm border border-stone-200/60 cursor-zoom-in group">
+    <Picture
+      src={featuredImage}
+      widths={[480, 768, 1200]}
+      sizes="(max-width: 768px) 100vw, 800px"
+      formats={['avif', 'webp']}
+      alt={title}
+      class="main-image w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+      loading="eager"
+      fetchpriority="high"
+    />
+    <div class="absolute bottom-4 right-4 bg-stone-900/70 text-white text-xs px-2.5 py-1.5 rounded-md backdrop-blur-sm pointer-events-none flex items-center gap-1.5">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637zM10.5 7.5v6m3-3h-6" />
+      </svg>
+      <span>Click to enlarge</span>
+    </div>
+  </div>
+
+  <!-- Thumbnails Strip -->
+  {hasThumbnails && (
+    <div class="flex gap-3 overflow-x-auto py-2 scroll-smooth no-scrollbar md:grid md:grid-cols-6 md:overflow-x-visible mt-4">
+      {allImages.map((image, index) => (
+        <button
+          type="button"
+          class={`thumbnail-btn relative aspect-video rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-150 shrink-0 w-24 md:w-auto ${index === 0 ? 'border-accent-600 ring-2 ring-accent-100' : 'border-stone-200 hover:border-stone-400'}`}
+          data-image-index={index}
+          data-image-src={image.src}
+          aria-label={`View image ${index + 1}`}
+        >
+          <Picture
+            src={image}
+            widths={[120, 240]}
+            sizes="120px"
+            formats={['avif', 'webp']}
+            alt={`${title} - Gallery Image ${index + 1}`}
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </button>
+      ))}
+    </div>
+  )}
+
+  <!-- Lightbox Modal -->
+  <div
+    class="lightbox-modal fixed inset-0 z-50 hidden bg-stone-950/95 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm"
+    aria-hidden="true"
+    role="dialog"
+  >
+    <button
+      type="button"
+      class="lightbox-close absolute top-4 right-4 text-white hover:text-stone-300 p-2 focus:outline-none cursor-pointer"
+      aria-label="Close lightbox"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    
+    <div class="max-w-5xl w-full flex flex-col items-center justify-center">
+      <img
+        class="lightbox-img max-w-full max-h-[80vh] md:max-h-[85vh] object-contain rounded-lg shadow-2xl"
+        src=""
+        alt={title}
+      />
+      <p class="lightbox-caption text-stone-300 text-sm mt-4 font-medium text-center">{title}</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupGallery() {
+    const containers = document.querySelectorAll('[data-gallery-container]');
+
+    containers.forEach((container) => {
+      const mainImage = container.querySelector('.main-image') as HTMLImageElement;
+      const mainImageWrapper = mainImage?.parentElement as HTMLElement;
+      const thumbnailBtns = container.querySelectorAll('.thumbnail-btn');
+      const lightboxModal = container.querySelector('.lightbox-modal') as HTMLElement;
+      const lightboxClose = container.querySelector('.lightbox-close') as HTMLButtonElement;
+      const lightboxImg = container.querySelector('.lightbox-img') as HTMLImageElement;
+
+      if (!mainImage || !mainImageWrapper) return;
+
+      // Keep track of current images
+      const imageSources = Array.from(thumbnailBtns).map((btn) => btn.getAttribute('data-image-src') || '');
+      if (imageSources.length === 0 && mainImage) {
+        imageSources.push(mainImage.getAttribute('src') || '');
+      }
+
+      let currentActiveIndex = 0;
+
+      // Handle thumbnail clicks to swap main display image
+      thumbnailBtns.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          const imageSrc = btn.getAttribute('data-image-src');
+          if (imageSrc && mainImage) {
+            // Swap standard src
+            mainImage.src = imageSrc;
+
+            // Swap source srcset for modern picture formats
+            const picture = mainImage.parentElement;
+            if (picture && picture.tagName === 'PICTURE') {
+              const sources = picture.querySelectorAll('source');
+              // Simple mapping logic: Astro sets source formats but since we can't easily rebuild
+              // the exact responsive sizes bundle in client code, we reset them or fallback.
+              // To ensure reliable swap, we update standard src, and since modern browsers handle it
+              // well, we can disable or override sources, or update their srcset if they share a naming pattern.
+              // For simplicity and stability, we can temporarily disable the picture source elements
+              // so the main image's new direct src path displays perfectly.
+              sources.forEach(srcEl => {
+                // If it's a fallback or we want simple replacement, we can replace srcset.
+                // Astro's generated images usually contain width query params. We can use a trick:
+                // If we copy the sources from the thumbnail picture, or simply hide sources to force standard src:
+                srcEl.setAttribute('srcset', imageSrc);
+              });
+            }
+
+            // Update active styling
+            thumbnailBtns.forEach((b) => {
+              b.classList.remove('border-accent-600', 'ring-2', 'ring-accent-100');
+              b.classList.add('border-stone-200');
+            });
+            btn.classList.remove('border-stone-200');
+            btn.classList.add('border-accent-600', 'ring-2', 'ring-accent-100');
+
+            currentActiveIndex = index;
+          }
+        });
+      });
+
+      // Lightbox functionality
+      if (lightboxModal && lightboxImg) {
+        const openLightbox = () => {
+          // Use the current active thumbnail's full-size source, or the main display source
+          const activeSrc = thumbnailBtns[currentActiveIndex]?.getAttribute('data-image-src') || mainImage.getAttribute('src') || '';
+          lightboxImg.src = activeSrc;
+          lightboxModal.classList.remove('hidden');
+          lightboxModal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden'; // Lock scroll
+        };
+
+        const closeLightbox = () => {
+          lightboxModal.classList.add('hidden');
+          lightboxModal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = ''; // Unlock scroll
+        };
+
+        // Open on main image click
+        mainImageWrapper.addEventListener('click', openLightbox);
+
+        // Close on close button or backdrop click
+        lightboxClose?.addEventListener('click', closeLightbox);
+        lightboxModal.addEventListener('click', (e) => {
+          if (e.target === lightboxModal) closeLightbox();
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !lightboxModal.classList.contains('hidden')) {
+            closeLightbox();
+          }
+        });
+      }
+    });
+  }
+
+  // Set up on initial load and after Astro page transitions
+  setupGallery();
+  document.addEventListener('astro:page-load', setupGallery);
+</script>
+
+<style>
+  /* Hide scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

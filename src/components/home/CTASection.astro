@@ -1,0 +1,45 @@
+---
+import Button from '../ui/Button.astro';
+import { AGENT } from '../../lib/constants';
+---
+
+<section class="relative bg-accent-950 text-white overflow-hidden py-16 md:py-24 border-t border-accent-900">
+  <!-- Subtle decorative backgrounds -->
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,var(--color-accent-900)/40,transparent_60%)] pointer-events-none"></div>
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,var(--color-accent-800)/20,transparent_50%)] pointer-events-none"></div>
+  
+  <!-- Subtle Grid Overlay -->
+  <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+
+  <div class="container-site relative z-10 text-center max-w-3xl mx-auto space-y-6">
+    <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold font-display text-white tracking-tight text-balance">
+      Ready to Find Your Dream Property?
+    </h2>
+    
+    <p class="text-base md:text-lg text-accent-200 max-w-xl mx-auto font-sans leading-relaxed text-balance">
+      Get in touch today for a free, no-obligation consultation on property selection, investment options, and legal valuation.
+    </p>
+
+    <!-- Buttons row -->
+    <div class="pt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+      <Button
+        variant="ghost"
+        href="/contact/"
+        class="w-full sm:w-auto bg-white text-accent-950 hover:bg-stone-100 font-bold px-8 py-3.5 shadow-md cursor-pointer rounded-lg text-center"
+      >
+        Contact Agent
+      </Button>
+      
+      <a
+        href={`tel:${AGENT.phone}`}
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all font-bold rounded-lg px-8 py-3 h-[52px]"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.824-1.806-5.18-4.156-6.987-6.987l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+        </svg>
+        <span>Call: {AGENT.phone}</span>
+      </a>
+    </div>
+  </div>
+</section>
+

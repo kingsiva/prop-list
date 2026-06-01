@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import PropertyGrid from './PropertyGrid.astro';
+
+interface Props {
+  currentSlug: string;
+  propertyType: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
+  city: string;
+}
+
+const { currentSlug, propertyType, city } = Astro.props;
+
+// Fetch all properties from content collections
+const allProperties = await getCollection('properties');
+
+// Filter: same property type AND same city, excluding the current one
+let similar = allProperties.filter((p) => {
+  const pSlug = p.data.slug || p.id;
+  return (
+    p.data.property_type === propertyType &&
+    p.data.city.toLowerCase() === city.toLowerCase() &&
+    pSlug !== currentSlug &&
+    p.data.status === 'available'
+  );
+});
+
+// Fallback: if no properties in same city, find same property type in any city
+if (similar.length === 0) {
+  similar = allProperties.filter((p) => {
+    const pSlug = p.data.slug || p.id;
+    return (
+      p.data.property_type === propertyType &&
+      pSlug !== currentSlug &&
+      p.data.status === 'available'
+    );
+  });
+}
+
+// Slice to max 3 results
+similar = similar.slice(0, 3);
+---
+
+{similar.length > 0 && (
+  <section class="space-y-6">
+    <div class="flex flex-col gap-1">
+      <h2 class="text-2xl md:text-3xl font-bold font-display text-stone-900">Similar Properties</h2>
+      <p class="text-stone-500 text-sm">Other properties you might be interested in</p>
+    </div>
+    
+    <PropertyGrid properties={similar} columns={3} />
+  </section>
+)}

@@ -1,0 +1,79 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  agentName: string;
+  agentPhone: string;
+  agentEmail: string;
+  compact?: boolean;
+}
+
+const {
+  agentName,
+  agentPhone,
+  agentEmail,
+  compact = false,
+} = Astro.props;
+
+// Get initials
+const initials = agentName
+  .split(' ')
+  .map((n) => n[0])
+  .join('')
+  .slice(0, 2)
+  .toUpperCase();
+
+// Format WhatsApp URL: strip non-digits from phone
+const cleanPhone = agentPhone.replace(/[^0-9]/g, '');
+const whatsappUrl = `https://wa.me/${cleanPhone}`;
+---
+
+<div class={`bg-white rounded-xl shadow-card border border-stone-100 ${compact ? 'p-4' : 'p-6'}`}>
+  <div class={`flex items-center gap-4 ${compact ? 'mb-4' : 'mb-6'}`}>
+    <!-- Avatar -->
+    <div class={`flex items-center justify-center rounded-full bg-accent-100 text-accent-800 font-bold font-display shrink-0 ${compact ? 'w-10 h-10 text-sm' : 'w-14 h-14 text-lg'}`}>
+      {initials}
+    </div>
+    
+    <div>
+      <h4 class={`font-semibold font-display text-stone-900 ${compact ? 'text-sm' : 'text-base'}`}>{agentName}</h4>
+      <p class="text-xs text-stone-500">Sole Property Agent</p>
+    </div>
+  </div>
+
+  <div class={`space-y-3 text-sm text-stone-600 ${compact ? 'mb-4' : 'mb-6'}`}>
+    <!-- Phone -->
+    <a href={`tel:${agentPhone}`} class="flex items-center gap-3 hover:text-accent-600 transition-colors group">
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-stone-50 text-stone-500 group-hover:bg-accent-50 group-hover:text-accent-600 transition-colors shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.824-1.806-5.18-4.156-6.987-6.987l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+        </svg>
+      </div>
+      <span class="font-medium">{agentPhone}</span>
+    </a>
+
+    <!-- Email -->
+    <a href={`mailto:${agentEmail}`} class="flex items-center gap-3 hover:text-accent-600 transition-colors group">
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-stone-50 text-stone-500 group-hover:bg-accent-50 group-hover:text-accent-600 transition-colors shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+        </svg>
+      </div>
+      <span class="truncate font-medium">{agentEmail}</span>
+    </a>
+
+    <!-- WhatsApp -->
+    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 hover:text-green-600 transition-colors group">
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-stone-50 text-stone-500 group-hover:bg-green-50 group-hover:text-green-600 transition-colors shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.413 9.863-9.847.001-2.63-1.019-5.101-2.871-6.957C16.51 1.944 14.043.924 11.417.924c-5.446 0-9.873 4.416-9.877 9.851-.001 1.762.467 3.486 1.357 5.02L1.92 20.895l5.228-1.378zm10.74-5.698c-.294-.148-1.745-.86-2.019-.958-.273-.099-.472-.148-.671.148-.198.297-.771.959-.945 1.157-.174.198-.348.223-.642.075-.294-.148-1.243-.458-2.368-1.46-1.125-1.002-1.777-2.24-1.998-2.637-.221-.397-.024-.612.174-.76.177-.133.397-.463.595-.694.198-.231.264-.397.397-.661.132-.264.066-.496-.033-.694-.099-.198-.671-1.62-.919-2.215-.24-.579-.487-.501-.671-.51l-.571-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.745-.71 1.993-1.399.248-.688.248-1.28.174-1.399-.074-.118-.272-.218-.567-.365z" />
+        </svg>
+      </div>
+      <span class="font-medium text-stone-700">Chat on WhatsApp</span>
+    </a>
+  </div>
+
+  <Button variant="primary" size={compact ? 'sm' : 'md'} href="/contact/" fullWidth>
+    Send Message
+  </Button>
+</div>

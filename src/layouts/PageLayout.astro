@@ -1,0 +1,38 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  class?: string;
+}
+
+const { title, description, class: className = '' } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <SEOHead title={title} description={description} />
+  </Fragment>
+
+  <article class="py-12 md:py-20 bg-stone-50">
+    <div class="container-narrow">
+      <!-- Page Header -->
+      <header class="text-center max-w-2xl mx-auto mb-12 md:mb-16 space-y-4">
+        <h1 class="text-4xl md:text-5xl font-extrabold font-display text-stone-900 tracking-tight leading-none">
+          {title}
+        </h1>
+        <p class="text-stone-500 text-base md:text-lg leading-relaxed font-sans">
+          {description}
+        </p>
+        <div class="w-12 h-1 bg-accent-600 mx-auto rounded"></div>
+      </header>
+
+      <!-- Content -->
+      <div class={`prose-content bg-white border border-stone-200/50 p-6 md:p-10 rounded-2xl shadow-sm mx-auto ${className}`}>
+        <slot />
+      </div>
+    </div>
+  </article>
+</BaseLayout>

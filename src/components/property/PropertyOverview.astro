@@ -1,0 +1,224 @@
+---
+import { FURNISHED_STATUS } from '../../lib/constants';
+
+interface Props {
+  property: {
+    property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
+    data: {
+      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
+      bedrooms?: number;
+      bathrooms?: number;
+      built_up_area_sqft?: number;
+      plot_area_sqft?: number;
+      carpet_area_sqft?: number;
+      land_area_sqft?: number;
+      land_area_acres?: number;
+      shop_area_sqft?: number;
+      floors?: number;
+      floor_number?: number;
+      total_floors?: number;
+      parking_spaces?: number;
+      furnished_status?: 'unfurnished' | 'semi_furnished' | 'fully_furnished';
+      zoning_type?: string;
+      facing?: string;
+      ownership_type?: string;
+      commercial_type?: string;
+      frontage_width?: number;
+      foot_traffic_rating?: 'low' | 'medium' | 'high';
+    };
+  };
+}
+
+const { property } = Astro.props;
+const data = property.data || (property as any); // support both direct data and wrapped entry
+
+const type = data.property_type;
+
+// Build the array of stats dynamically based on property type
+interface StatItem {
+  icon: string;
+  label: string;
+  value: string;
+}
+
+const stats: StatItem[] = [];
+
+if (type === 'house' || type === 'apartment') {
+  if (data.bedrooms !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v-2.625c0-1.036-.84-1.875-1.875-1.875h-1.375a.375.375 0 0 1-.375-.375V7.875C16.625 6.839 15.785 6 14.75 6H9.25C8.215 6 7.375 6.839 7.375 7.875v1.375a.375.375 0 0 1-.375.375H5.625C4.59 9.625 3.75 10.464 3.75 11.525v2.625m16.5 0a1.875 1.875 0 0 0-1.875-1.875h-1.375a.375.375 0 0 1-.375-.375V7.875c0-1.036-.84-1.875-1.875-1.875H9.25C8.215 4.125 7.375 4.964 7.375 6v1.375a.375.375 0 0 1-.375.375H5.625a1.875 1.875 0 0 0-1.875 1.875v2.625m16.5 0v1.5a1.875 1.875 0 0 1-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875v-1.5m16.5 0a1.875 1.875 0 0 1-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875v-1.5M12 9v7.5M12 16.5H3.75M12 16.5h8.25" /></svg>`,
+      label: 'Bedrooms',
+      value: `${data.bedrooms} BHK`
+    });
+  }
+  if (data.bathrooms !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 3.75h9m-9 0a1.875 1.875 0 1 1-3.75 0m3.75 0v16.5m9-16.5a1.875 1.875 0 1 1 3.75 0m-3.75 0v16.5m-12 0h15" /></svg>`,
+      label: 'Bathrooms',
+      value: `${data.bathrooms} Baths`
+    });
+  }
+  
+  const area = data.built_up_area_sqft || data.carpet_area_sqft;
+  if (area) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5h16.5M12 12h8.25m-8.25 4.5h8.25m-8.25-9H20.25" /></svg>`,
+      label: type === 'house' ? 'Built-up Area' : 'Carpet Area',
+      value: `${area.toLocaleString('en-IN')} sqft`
+    });
+  }
+
+  if (type === 'house' && data.floors !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-7.5 2.727M2.25 9v12M6.75 7.364V21" /></svg>`,
+      label: 'Total Floors',
+      value: `${data.floors} Storey`
+    });
+  }
+
+  if (type === 'apartment' && data.floor_number !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-7.5 2.727M2.25 9v12M6.75 7.364V21" /></svg>`,
+      label: 'Floor',
+      value: `${data.floor_number} of ${data.total_floors || 'N/A'}`
+    });
+  }
+
+  if (data.parking_spaces !== undefined && data.parking_spaces > 0) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 10.5h.008v.008H8.25V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>`,
+      label: 'Parking',
+      value: `${data.parking_spaces} slots`
+    });
+  }
+
+  if (data.furnished_status) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5" /></svg>`,
+      label: 'Furnishing',
+      value: FURNISHED_STATUS[data.furnished_status] || data.furnished_status
+    });
+  }
+}
+
+if (type === 'land') {
+  if (data.land_area_sqft) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5h16.5M12 12h8.25m-8.25 4.5h8.25m-8.25-9H20.25" /></svg>`,
+      label: 'Plot Area (Sqft)',
+      value: `${data.land_area_sqft.toLocaleString('en-IN')} sqft`
+    });
+  }
+  if (data.land_area_acres !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.75 3h-7.5A2.25 2.25 0 0 1 6 18V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v12a2.25 2.25 0 0 1-2.25 2.25Z" /></svg>`,
+      label: 'Plot Area (Acres)',
+      value: `${data.land_area_acres} Acres`
+    });
+  }
+  if (data.zoning_type) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9y8.716 11.253C18.775 7.152 15.632 4.5 12 4.5c-3.632 0-6.775 2.652-6.716 6.753" /></svg>`,
+      label: 'Zoning',
+      value: data.zoning_type
+    });
+  }
+  if (data.facing) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" /></svg>`,
+      label: 'Facing',
+      value: data.facing
+    });
+  }
+}
+
+if (type === 'commercial') {
+  if (data.commercial_type) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15" /></svg>`,
+      label: 'Commercial Type',
+      value: data.commercial_type
+    });
+  }
+  if (data.built_up_area_sqft) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5h16.5M12 12h8.25m-8.25 4.5h8.25m-8.25-9H20.25" /></svg>`,
+      label: 'Built-up Area',
+      value: `${data.built_up_area_sqft.toLocaleString('en-IN')} sqft`
+    });
+  }
+  if (data.total_floors) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75" /></svg>`,
+      label: 'Total Floors',
+      value: `${data.total_floors} Floors`
+    });
+  }
+  if (data.parking_spaces !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6" /></svg>`,
+      label: 'Parking Space',
+      value: `${data.parking_spaces} slots`
+    });
+  }
+}
+
+if (type === 'shop') {
+  if (data.shop_area_sqft) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5h16.5M12 12h8.25m-8.25 4.5h8.25m-8.25-9H20.25" /></svg>`,
+      label: 'Shop Area',
+      value: `${data.shop_area_sqft.toLocaleString('en-IN')} sqft`
+    });
+  }
+  if (data.frontage_width !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9v11.25m0-11.25a3 3 0 1 1-6 0m6 0a3 3 0 0 0 6 0m0 0V20.25" /></svg>`,
+      label: 'Road Frontage',
+      value: `${data.frontage_width} ft`
+    });
+  }
+  if (data.floor_number !== undefined) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21" /></svg>`,
+      label: 'Floor Number',
+      value: data.floor_number === 0 ? 'Ground Floor' : `Floor ${data.floor_number}`
+    });
+  }
+  if (data.foot_traffic_rating) {
+    stats.push({
+      icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.3 12a3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3Zm-3-9c-7.142 0-11.25 7.5-11.25 7.5S5.156 18 12.3 18c7.142 0 11.25-7.5 11.25-7.5s-4.108-7.5-11.25-7.5Z" /></svg>`,
+      label: 'Foot Traffic',
+      value: data.foot_traffic_rating.charAt(0).toUpperCase() + data.foot_traffic_rating.slice(1)
+    });
+  }
+}
+
+// Add common stats if there's space (like ownership or facing if not already included)
+if (data.ownership_type && stats.length < 4) {
+  stats.push({
+    icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z" /></svg>`,
+    label: 'Ownership',
+    value: data.ownership_type
+  });
+}
+---
+
+{stats.length > 0 && (
+  <div class="bg-stone-50 rounded-xl border border-stone-200/60 p-6 shadow-sm">
+    <h3 class="text-sm font-semibold uppercase tracking-wider text-stone-500 mb-5">Property Overview</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+      {stats.map((stat) => (
+        <div class="flex items-start gap-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white border border-stone-200 text-accent-600 shadow-sm">
+            <Fragment set:html={stat.icon} />
+          </div>
+          <div>
+            <span class="block text-xs text-stone-400 font-medium">{stat.label}</span>
+            <span class="block text-sm font-bold text-stone-800 mt-0.5">{stat.value}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}

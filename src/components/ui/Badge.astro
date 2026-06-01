@@ -1,0 +1,47 @@
+---
+import { STATUS_COLORS, STATUS_LABELS } from '../../lib/constants';
+import { getPropertyTypeLabel, getListingTypeLabel } from '../../lib/formatters';
+
+interface Props {
+  variant?: 'property_type' | 'listing_type' | 'status';
+  value: string;
+  class?: string;
+}
+
+const {
+  variant = 'property_type',
+  value,
+  class: className = '',
+} = Astro.props;
+
+// Determine colors and label based on variant
+let badgeColor = 'bg-stone-100 text-stone-700';
+let badgeLabel = value;
+
+if (variant === 'property_type') {
+  badgeColor = 'bg-stone-100 text-stone-700';
+  badgeLabel = getPropertyTypeLabel(value);
+} else if (variant === 'listing_type') {
+  const normValue = value.toLowerCase();
+  if (normValue === 'buy') {
+    badgeColor = 'bg-accent-100 text-accent-800';
+  } else if (normValue === 'rent') {
+    badgeColor = 'bg-warm-100 text-warm-500';
+  }
+  badgeLabel = getListingTypeLabel(normValue);
+} else if (variant === 'status') {
+  const normValue = value as keyof typeof STATUS_COLORS;
+  badgeColor = STATUS_COLORS[normValue] || 'bg-stone-100 text-stone-700';
+  badgeLabel = STATUS_LABELS[normValue] || value;
+}
+
+const classes = [
+  'inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-md uppercase tracking-wider',
+  badgeColor,
+  className
+].filter(Boolean).join(' ');
+---
+
+<span class={classes}>
+  {badgeLabel}
+</span>

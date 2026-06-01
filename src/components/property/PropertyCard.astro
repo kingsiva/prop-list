@@ -1,0 +1,162 @@
+---
+import { Picture } from 'astro:assets';
+import Badge from '../ui/Badge.astro';
+import { formatPriceShort, getPriceDisplay, getPropertyTypeLabel } from '../../lib/formatters';
+import { getPropertyUrl } from '../../lib/utils';
+
+interface Props {
+  property: {
+    id: string;
+    data: {
+      title: string;
+      slug: string;
+      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
+      listing_type: 'buy' | 'rent';
+      rental_type?: 'daily' | 'weekly' | 'monthly';
+      price: number;
+      location: string;
+      city: string;
+      status: 'available' | 'sold' | 'rented' | 'under_negotiation';
+      featured_image: ImageMetadata;
+      bedrooms?: number;
+      bathrooms?: number;
+      built_up_area_sqft?: number;
+      carpet_area_sqft?: number;
+      land_area_sqft?: number;
+      shop_area_sqft?: number;
+      parking_spaces?: number;
+      features?: string[];
+    };
+  };
+}
+
+const { property } = Astro.props;
+const { data, id } = property;
+
+// Use slug or id
+const propertySlug = data.slug || id;
+const propertyUrl = getPropertyUrl(propertySlug);
+
+// Get price display
+const priceDisplay = getPriceDisplay(data.price, data.listing_type, data.rental_type);
+
+// Area formatting
+let areaDisplay = '';
+if (data.property_type === 'land' && data.land_area_sqft) {
+  areaDisplay = `${data.land_area_sqft.toLocaleString('en-IN')} sqft`;
+} else if (data.property_type === 'house' && data.built_up_area_sqft) {
+  areaDisplay = `${data.built_up_area_sqft.toLocaleString('en-IN')} sqft`;
+} else if (data.property_type === 'apartment' && data.carpet_area_sqft) {
+  areaDisplay = `${data.carpet_area_sqft.toLocaleString('en-IN')} sqft`;
+} else if (data.property_type === 'commercial' && data.built_up_area_sqft) {
+  areaDisplay = `${data.built_up_area_sqft.toLocaleString('en-IN')} sqft`;
+} else if (data.property_type === 'shop' && data.shop_area_sqft) {
+  areaDisplay = `${data.shop_area_sqft.toLocaleString('en-IN')} sqft`;
+}
+---
+
+<article class="card-hover flex flex-col bg-white rounded-xl shadow-card border border-stone-100 overflow-hidden h-full">
+  <!-- Image Container -->
+  <div class="relative aspect-property overflow-hidden bg-stone-100">
+    <a href={propertyUrl} class="block h-full w-full">
+      <Picture
+        src={data.featured_image}
+        widths={[480, 768]}
+        sizes="(max-width: 768px) 100vw, 33vw"
+        formats={['avif', 'webp']}
+        alt={data.title}
+        class="h-full w-full object-cover transition-transform duration-500 ease-out hover:scale-105"
+        loading="lazy"
+      />
+    </a>
+
+    <!-- Top Left Badge: Property Type -->
+    <div class="absolute top-3 left-3 z-10">
+      <Badge variant="property_type" value={data.property_type} class="backdrop-blur-sm bg-white/90 text-stone-900 border border-stone-200/50 shadow-sm" />
+    </div>
+
+    <!-- Top Right Badge: Listing Type -->
+    <div class="absolute top-3 right-3 z-10">
+      <Badge variant="listing_type" value={data.listing_type} class="shadow-sm" />
+    </div>
+
+    <!-- Non-Available Status Badge -->
+    {data.status !== 'available' && (
+      <div class="absolute bottom-3 left-3 z-10">
+        <Badge variant="status" value={data.status} class="shadow-sm border border-stone-200/50" />
+      </div>
+    )}
+  </div>
+
+  <!-- Content -->
+  <div class="p-5 flex flex-col flex-1">
+    <!-- Title -->
+    <h3 class="text-lg font-bold font-display text-stone-900 line-clamp-1 mb-1">
+      <a href={propertyUrl} class="hover:text-accent-600 transition-colors duration-150">
+        {data.title}
+      </a>
+    </h3>
+
+    <!-- Location -->
+    <div class="flex items-center gap-1 text-sm text-stone-500 mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-stone-400 shrink-0">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+      </svg>
+      <span class="truncate">{data.location}, {data.city}</span>
+    </div>
+
+    <!-- Key Stats Row -->
+    {data.property_type !== 'land' && (
+      <div class="grid grid-cols-3 gap-2 py-3 px-3 rounded-lg bg-stone-50 border border-stone-100 text-stone-600 text-xs font-medium mb-4 mt-auto">
+        {data.bedrooms !== undefined && (
+          <div class="flex flex-col items-center justify-center border-r border-stone-200/60 last:border-0">
+            <span class="text-stone-400 font-normal">Beds</span>
+            <span class="text-stone-800 font-semibold mt-0.5">{data.bedrooms}</span>
+          </div>
+        )}
+        {data.bathrooms !== undefined && (
+          <div class="flex flex-col items-center justify-center border-r border-stone-200/60 last:border-0">
+            <span class="text-stone-400 font-normal">Baths</span>
+            <span class="text-stone-800 font-semibold mt-0.5">{data.bathrooms}</span>
+          </div>
+        )}
+        {areaDisplay && (
+          <div class="flex flex-col items-center justify-center last:border-0">
+            <span class="text-stone-400 font-normal">Area</span>
+            <span class="text-stone-800 font-semibold mt-0.5 truncate">{areaDisplay.split(' ')[0]} <span class="text-[10px] text-stone-500 font-normal">sqft</span></span>
+          </div>
+        )}
+      </div>
+    )}
+
+    {data.property_type === 'land' && (
+      <div class="grid grid-cols-2 gap-2 py-3 px-3 rounded-lg bg-stone-50 border border-stone-100 text-stone-600 text-xs font-medium mb-4 mt-auto">
+        <div class="flex flex-col items-center justify-center border-r border-stone-200/60 last:border-0">
+          <span class="text-stone-400 font-normal">Zoning</span>
+          <span class="text-stone-800 font-semibold mt-0.5 truncate">{data.features?.includes('gated_community') ? 'Gated' : 'Residential'}</span>
+        </div>
+        {areaDisplay && (
+          <div class="flex flex-col items-center justify-center last:border-0">
+            <span class="text-stone-400 font-normal">Plot Area</span>
+            <span class="text-stone-800 font-semibold mt-0.5 truncate">{areaDisplay.split(' ')[0]} <span class="text-[10px] text-stone-500 font-normal">sqft</span></span>
+          </div>
+        )}
+      </div>
+    )}
+
+    <!-- Price and View Details -->
+    <div class="flex items-center justify-between pt-3 border-t border-stone-100 mt-auto">
+      <div>
+        <span class="block text-[10px] text-stone-400 uppercase tracking-wider font-semibold">Price</span>
+        <span class="text-base font-bold font-display text-accent-700">{priceDisplay}</span>
+      </div>
+      <a href={propertyUrl} class="text-sm font-semibold text-stone-700 hover:text-accent-600 transition-colors flex items-center gap-1 group">
+        <span>View Details</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>

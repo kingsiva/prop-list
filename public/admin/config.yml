@@ -1,0 +1,317 @@
+# ============================================
+# DECAP CMS CONFIGURATION
+# Premier Properties — Property Listing Portal
+# ============================================
+
+backend:
+  name: git-gateway
+  branch: main
+
+# Netlify Identity
+site_url: https://properties.example.com
+display_url: https://properties.example.com
+logo_url: /favicon.svg
+
+# Media
+media_folder: "src/assets/images/uploads"
+public_folder: "/src/assets/images/uploads"
+
+# Slug settings
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
+# ============================================
+# COMMON FIELD DEFINITIONS (YAML anchors)
+# ============================================
+
+# Base property fields shared by all types
+_base_fields: &base_fields
+  - { label: "Title", name: "title", widget: "string", hint: "Property listing title (e.g., 'Spacious 3BHK Villa in Anna Nagar')" }
+  - { label: "Slug", name: "slug", widget: "string", hint: "URL-friendly identifier (auto-generated from title)" }
+  - { label: "Property ID", name: "property_id", widget: "string", hint: "Unique property reference code" }
+  - { label: "Featured", name: "featured", widget: "boolean", default: false, hint: "Show on homepage featured section" }
+  - label: "Status"
+    name: "status"
+    widget: "select"
+    options:
+      - { label: "Available", value: "available" }
+      - { label: "Sold", value: "sold" }
+      - { label: "Rented", value: "rented" }
+      - { label: "Under Negotiation", value: "under_negotiation" }
+    default: "available"
+  - label: "Listing Type"
+    name: "listing_type"
+    widget: "select"
+    options:
+      - { label: "Buy", value: "buy" }
+      - { label: "Rent", value: "rent" }
+  - label: "Rental Type"
+    name: "rental_type"
+    widget: "select"
+    options:
+      - { label: "Daily", value: "daily" }
+      - { label: "Weekly", value: "weekly" }
+      - { label: "Monthly", value: "monthly" }
+    required: false
+    hint: "Only applicable if Listing Type is 'Rent'"
+  - { label: "Price (₹)", name: "price", widget: "number", value_type: "int", min: 0 }
+  - { label: "Location", name: "location", widget: "string", hint: "Area or locality name" }
+  - { label: "Address", name: "address", widget: "string" }
+  - { label: "City", name: "city", widget: "string" }
+  - { label: "State", name: "state", widget: "string" }
+  - { label: "Postal Code", name: "postal_code", widget: "string" }
+  - { label: "Description", name: "description", widget: "text" }
+  - { label: "Featured Image", name: "featured_image", widget: "image" }
+  - label: "Gallery Images"
+    name: "gallery_images"
+    widget: "list"
+    field: { label: "Image", name: "image", widget: "image" }
+    required: false
+  - { label: "Google Map URL", name: "google_map_url", widget: "string", required: false, hint: "Google Maps embed or link URL" }
+  - { label: "Agent Name", name: "agent_name", widget: "string", default: "Rajesh Kumar" }
+  - { label: "Agent Phone", name: "agent_phone", widget: "string", default: "+91 98765 43210" }
+  - { label: "Agent Email", name: "agent_email", widget: "string", default: "rajesh@premierproperties.in" }
+  - { label: "Published Date", name: "published_date", widget: "datetime" }
+  - label: "Features"
+    name: "features"
+    widget: "select"
+    multiple: true
+    required: false
+    options:
+      - { label: "Near School", value: "near_school" }
+      - { label: "Near Hospital", value: "near_hospital" }
+      - { label: "Near Highway", value: "near_highway" }
+      - { label: "Near Bus Stand", value: "near_bus_stand" }
+      - { label: "Near Railway Station", value: "near_railway_station" }
+      - { label: "Near Airport", value: "near_airport" }
+      - { label: "Gated Community", value: "gated_community" }
+      - { label: "Park Facing", value: "park_facing" }
+      - { label: "Corner Property", value: "corner_property" }
+
+# ============================================
+# COLLECTIONS
+# ============================================
+
+collections:
+
+  # ---- LAND ----
+  - name: "land"
+    label: "🏞️ Land"
+    folder: "src/content/properties"
+    create: true
+    slug: "{{slug}}"
+    filter: { field: "property_type", value: "land" }
+    fields:
+      - { label: "Property Type", name: "property_type", widget: "hidden", default: "land" }
+      - *base_fields
+      - { label: "Land Area (sq.ft)", name: "land_area_sqft", widget: "number", value_type: "int" }
+      - { label: "Land Area (acres)", name: "land_area_acres", widget: "number", value_type: "float", required: false }
+      - { label: "Zoning Type", name: "zoning_type", widget: "string", required: false }
+      - { label: "Road Access", name: "road_access", widget: "boolean", default: false }
+      - { label: "Corner Plot", name: "corner_plot", widget: "boolean", default: false }
+      - { label: "Construction Permission", name: "construction_permission", widget: "boolean", default: false }
+      - { label: "Approved Layout", name: "approved_layout", widget: "boolean", default: false }
+      - { label: "DTCP Approved", name: "dtcp_approved", widget: "boolean", default: false }
+      - { label: "RERA Approved", name: "rera_approved", widget: "boolean", default: false }
+      - { label: "Water Connection", name: "water_connection", widget: "boolean", default: false }
+      - { label: "Electricity Connection", name: "electricity_connection", widget: "boolean", default: false }
+      - { label: "Drainage Connection", name: "drainage_connection", widget: "boolean", default: false }
+      - { label: "Fencing", name: "fencing", widget: "boolean", default: false }
+      - { label: "Boundary Wall", name: "boundary_wall", widget: "boolean", default: false }
+      - { label: "Survey Number", name: "survey_number", widget: "string", required: false }
+      - label: "Facing"
+        name: "facing"
+        widget: "select"
+        required: false
+        options: ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"]
+      - { label: "Ownership Type", name: "ownership_type", widget: "string", required: false }
+      - { label: "Agricultural Land", name: "agricultural_land", widget: "boolean", default: false }
+      - { label: "Residential Land", name: "residential_land", widget: "boolean", default: false }
+      - { label: "Commercial Land", name: "commercial_land", widget: "boolean", default: false }
+      - { label: "Nearby Landmarks", name: "nearby_landmarks", widget: "text", required: false }
+
+  # ---- HOUSE ----
+  - name: "house"
+    label: "🏠 Houses"
+    folder: "src/content/properties"
+    create: true
+    slug: "{{slug}}"
+    filter: { field: "property_type", value: "house" }
+    fields:
+      - { label: "Property Type", name: "property_type", widget: "hidden", default: "house" }
+      - *base_fields
+      - { label: "Built-up Area (sq.ft)", name: "built_up_area_sqft", widget: "number", value_type: "int" }
+      - { label: "Plot Area (sq.ft)", name: "plot_area_sqft", widget: "number", value_type: "int", required: false }
+      - { label: "Bedrooms", name: "bedrooms", widget: "number", value_type: "int", min: 1 }
+      - { label: "Bathrooms", name: "bathrooms", widget: "number", value_type: "int", min: 1 }
+      - { label: "Toilets", name: "toilets", widget: "number", value_type: "int", required: false }
+      - { label: "Floors", name: "floors", widget: "number", value_type: "int", default: 1 }
+      - { label: "Balconies", name: "balconies", widget: "number", value_type: "int", default: 0 }
+      - { label: "Parking Spaces", name: "parking_spaces", widget: "number", value_type: "int", default: 0 }
+      - label: "Furnished Status"
+        name: "furnished_status"
+        widget: "select"
+        options:
+          - { label: "Unfurnished", value: "unfurnished" }
+          - { label: "Semi Furnished", value: "semi_furnished" }
+          - { label: "Fully Furnished", value: "fully_furnished" }
+        default: "unfurnished"
+      - { label: "House Age (years)", name: "house_age", widget: "number", value_type: "int", required: false }
+      - { label: "Construction Year", name: "construction_year", widget: "number", value_type: "int", required: false }
+      - { label: "Construction Permission", name: "construction_permission", widget: "boolean", default: false }
+      - { label: "Water Supply", name: "water_supply", widget: "boolean", default: false }
+      - { label: "Electricity", name: "electricity", widget: "boolean", default: true }
+      - { label: "Drainage", name: "drainage", widget: "boolean", default: false }
+      - { label: "Borewell", name: "borewell", widget: "boolean", default: false }
+      - { label: "Septic Tank", name: "septic_tank", widget: "boolean", default: false }
+      - { label: "Solar Power", name: "solar_power", widget: "boolean", default: false }
+      - { label: "Compound Wall", name: "compound_wall", widget: "boolean", default: false }
+      - { label: "Gated Property", name: "gated_property", widget: "boolean", default: false }
+      - { label: "Road Width", name: "road_width", widget: "string", required: false }
+      - label: "Facing"
+        name: "facing"
+        widget: "select"
+        required: false
+        options: ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"]
+      - { label: "Ownership Type", name: "ownership_type", widget: "string", required: false }
+
+  # ---- APARTMENT ----
+  - name: "apartment"
+    label: "🏢 Apartments"
+    folder: "src/content/properties"
+    create: true
+    slug: "{{slug}}"
+    filter: { field: "property_type", value: "apartment" }
+    fields:
+      - { label: "Property Type", name: "property_type", widget: "hidden", default: "apartment" }
+      - *base_fields
+      - { label: "Super Built-up Area (sq.ft)", name: "super_builtup_area_sqft", widget: "number", value_type: "int", required: false }
+      - { label: "Carpet Area (sq.ft)", name: "carpet_area_sqft", widget: "number", value_type: "int" }
+      - { label: "Bedrooms", name: "bedrooms", widget: "number", value_type: "int", min: 1 }
+      - { label: "Bathrooms", name: "bathrooms", widget: "number", value_type: "int", min: 1 }
+      - { label: "Toilets", name: "toilets", widget: "number", value_type: "int", required: false }
+      - { label: "Floor Number", name: "floor_number", widget: "number", value_type: "int" }
+      - { label: "Total Floors", name: "total_floors", widget: "number", value_type: "int", required: false }
+      - { label: "Lift Available", name: "lift_available", widget: "boolean", default: false }
+      - { label: "Power Backup", name: "power_backup", widget: "boolean", default: false }
+      - { label: "Balconies", name: "balconies", widget: "number", value_type: "int", default: 0 }
+      - { label: "Parking Spaces", name: "parking_spaces", widget: "number", value_type: "int", default: 0 }
+      - label: "Furnished Status"
+        name: "furnished_status"
+        widget: "select"
+        options:
+          - { label: "Unfurnished", value: "unfurnished" }
+          - { label: "Semi Furnished", value: "semi_furnished" }
+          - { label: "Fully Furnished", value: "fully_furnished" }
+        default: "unfurnished"
+      - { label: "Apartment Age (years)", name: "apartment_age", widget: "number", value_type: "int", required: false }
+      - { label: "Maintenance Fee (₹/month)", name: "maintenance_fee", widget: "number", value_type: "int", required: false }
+      - { label: "24/7 Security", name: "security", widget: "boolean", default: false }
+      - { label: "Gym", name: "gym", widget: "boolean", default: false }
+      - { label: "Swimming Pool", name: "swimming_pool", widget: "boolean", default: false }
+      - { label: "Clubhouse", name: "clubhouse", widget: "boolean", default: false }
+      - { label: "Children Play Area", name: "children_play_area", widget: "boolean", default: false }
+      - { label: "Visitor Parking", name: "visitor_parking", widget: "boolean", default: false }
+      - { label: "Ownership Type", name: "ownership_type", widget: "string", required: false }
+
+  # ---- COMMERCIAL ----
+  - name: "commercial"
+    label: "🏗️ Commercial"
+    folder: "src/content/properties"
+    create: true
+    slug: "{{slug}}"
+    filter: { field: "property_type", value: "commercial" }
+    fields:
+      - { label: "Property Type", name: "property_type", widget: "hidden", default: "commercial" }
+      - *base_fields
+      - label: "Commercial Type"
+        name: "commercial_type"
+        widget: "select"
+        options: ["Office Space", "Warehouse", "Showroom", "Industrial Shed", "Co-working Space", "IT Park", "Other"]
+      - { label: "Built-up Area (sq.ft)", name: "built_up_area_sqft", widget: "number", value_type: "int" }
+      - { label: "Land Area (sq.ft)", name: "land_area_sqft", widget: "number", value_type: "int", required: false }
+      - { label: "Floor Number", name: "floor_number", widget: "number", value_type: "int", required: false }
+      - { label: "Total Floors", name: "total_floors", widget: "number", value_type: "int", required: false }
+      - { label: "Parking Spaces", name: "parking_spaces", widget: "number", value_type: "int", default: 0 }
+      - { label: "Lift Available", name: "lift_available", widget: "boolean", default: false }
+      - { label: "Power Backup", name: "power_backup", widget: "boolean", default: false }
+      - { label: "Generator", name: "generator", widget: "boolean", default: false }
+      - { label: "Internet Connectivity", name: "internet_connectivity", widget: "boolean", default: false }
+      - { label: "Conference Room", name: "conference_room", widget: "boolean", default: false }
+      - { label: "Meeting Room", name: "meeting_room", widget: "boolean", default: false }
+      - { label: "Reception Area", name: "reception_area", widget: "boolean", default: false }
+      - { label: "Cafeteria", name: "cafeteria", widget: "boolean", default: false }
+      - { label: "Warehouse Space", name: "warehouse_space", widget: "boolean", default: false }
+      - { label: "Loading Area", name: "loading_area", widget: "boolean", default: false }
+      - { label: "Truck Access", name: "truck_access", widget: "boolean", default: false }
+      - { label: "Fire Safety System", name: "fire_safety_system", widget: "boolean", default: false }
+      - { label: "Occupancy Certificate", name: "occupancy_certificate", widget: "boolean", default: false }
+      - { label: "Commercial License", name: "commercial_license", widget: "boolean", default: false }
+
+  # ---- SHOP ----
+  - name: "shop"
+    label: "🏪 Shops"
+    folder: "src/content/properties"
+    create: true
+    slug: "{{slug}}"
+    filter: { field: "property_type", value: "shop" }
+    fields:
+      - { label: "Property Type", name: "property_type", widget: "hidden", default: "shop" }
+      - *base_fields
+      - { label: "Shop Area (sq.ft)", name: "shop_area_sqft", widget: "number", value_type: "int" }
+      - { label: "Frontage Width (ft)", name: "frontage_width", widget: "number", value_type: "float", required: false }
+      - { label: "Floor Number", name: "floor_number", widget: "number", value_type: "int", default: 0 }
+      - { label: "Parking Spaces", name: "parking_spaces", widget: "number", value_type: "int", default: 0 }
+      - { label: "Storage Room", name: "storage_room", widget: "boolean", default: false }
+      - { label: "Washroom", name: "washroom", widget: "boolean", default: false }
+      - { label: "Display Front", name: "display_front", widget: "boolean", default: false }
+      - { label: "Shutter Count", name: "shutter_count", widget: "number", value_type: "int", default: 1 }
+      - { label: "Main Road Facing", name: "main_road_facing", widget: "boolean", default: false }
+      - label: "Foot Traffic Rating"
+        name: "foot_traffic_rating"
+        widget: "select"
+        required: false
+        options:
+          - { label: "Low", value: "low" }
+          - { label: "Medium", value: "medium" }
+          - { label: "High", value: "high" }
+      - { label: "Commercial License", name: "commercial_license", widget: "boolean", default: false }
+      - { label: "Electricity Connection", name: "electricity_connection", widget: "boolean", default: true }
+      - { label: "Water Connection", name: "water_connection", widget: "boolean", default: false }
+      - { label: "Fire Safety System", name: "fire_safety_system", widget: "boolean", default: false }
+
+  # ---- TESTIMONIALS ----
+  - name: "testimonials"
+    label: "⭐ Testimonials"
+    folder: "src/content/testimonials"
+    create: true
+    slug: "{{fields.name}}"
+    fields:
+      - { label: "Client Name", name: "name", widget: "string" }
+      - { label: "Testimonial", name: "text", widget: "text" }
+      - { label: "Rating (1-5)", name: "rating", widget: "number", value_type: "int", min: 1, max: 5, default: 5 }
+      - { label: "Photo", name: "photo", widget: "image", required: false }
+      - { label: "Designation", name: "designation", widget: "string", required: false, hint: "e.g., 'Business Owner' or 'Software Engineer'" }
+      - { label: "Body", name: "body", widget: "markdown", required: false }
+
+  # ---- SITE SETTINGS ----
+  - name: "settings"
+    label: "⚙️ Settings"
+    files:
+      - label: "Agent Profile"
+        name: "agent"
+        file: "src/content/settings/agent.json"
+        fields:
+          - { label: "Agent Name", name: "agent_name", widget: "string" }
+          - { label: "Phone", name: "agent_phone", widget: "string" }
+          - { label: "Email", name: "agent_email", widget: "string" }
+          - { label: "Designation", name: "agent_designation", widget: "string", required: false }
+          - { label: "Photo", name: "agent_photo", widget: "image", required: false }
+          - { label: "Years of Experience", name: "experience_years", widget: "number", value_type: "int", required: false }
+          - { label: "Properties Sold", name: "properties_sold", widget: "number", value_type: "int", required: false }
+          - { label: "Bio", name: "bio", widget: "text" }
+          - { label: "WhatsApp Number", name: "whatsapp", widget: "string", required: false }
+          - { label: "Office Address", name: "office_address", widget: "string", required: false }
+          - { label: "Office City", name: "office_city", widget: "string", required: false }
+          - { label: "Office State", name: "office_state", widget: "string", required: false }

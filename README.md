@@ -1,43 +1,54 @@
-# Astro Starter Kit: Minimal
+# Premier Properties Portal
 
-```sh
-npm create astro@latest -- --template minimal
-```
+A web portal for Premier Properties, a real estate consultant in Tamil Nadu. The project features property listings with search filters, location autocomplete, dynamic details pages, a custom gallery lightbox, and direct contact options.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Tech Stack
 
-## 🚀 Project Structure
+* **Framework:** Astro 6
+* **CSS Framework:** Tailwind CSS 4
+* **Build System:** Vite
+* **Hosting:** Netlify (configured with redirects and security headers)
 
-Inside of your Astro project, you'll see the following folders and files:
+## Getting Started
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+### Prerequisites
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+* Node.js (v22 or higher)
+* npm
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### Installation
 
-Any static assets, like images, can be placed in the `public/` directory.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## 🧞 Commands
+2. Start the local development server:
+   ```bash
+   npm run dev
+   ```
 
-All commands are run from the root of the project, from a terminal:
+The site will be available at `http://localhost:4321`.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## Project Structure
 
-## 👀 Want to learn more?
+* `src/pages/` - Site pages and routing
+* `src/components/` - Shared UI components (gallery, search filters, layouts)
+* `src/content/` - Markdown files for properties, testimonials, and settings
+* `src/assets/` - Local images and static visual resources
+* `public/` - Static assets served at the root (favicons, robots.txt)
+* `copy-assets.mjs` - Helper script that copies generated design assets into place before build/dev runs
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Managing Listings
+
+Properties are managed as static files using Astro Content Collections. To add or modify a listing, edit the markdown files in `src/content/properties/`. 
+
+Each property file uses frontmatter details:
+* `title` (text)
+* `property_type` (zoning: land, house, apartment, commercial, shop)
+* `listing_type` (buy or rent)
+* `price` (numerical value in INR)
+* `location` (neighborhood or area)
+* `city` (city name)
+* `featured_image` (path to main photo)
+* `gallery_images` (list of paths to gallery photos)

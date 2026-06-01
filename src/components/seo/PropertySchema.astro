@@ -1,0 +1,162 @@
+---
+import { SITE_URL, SITE_NAME } from '../../lib/constants';
+
+interface Props {
+  property: {
+    id: string;
+    data: {
+      title: string;
+      property_id: string;
+      description: string;
+      price: number;
+      listing_type: 'buy' | 'rent';
+      rental_type?: 'daily' | 'weekly' | 'monthly';
+      location: string;
+      address: string;
+      city: string;
+      state: string;
+      postal_code: string;
+      published_date: Date;
+      featured_image: { src: string };
+      gallery_images?: { src: string }[];
+      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
+      bedrooms?: number;
+      bathrooms?: number;
+      built_up_area_sqft?: number;
+      carpet_area_sqft?: number;
+      land_area_sqft?: number;
+      shop_area_sqft?: number;
+      agent_name: string;
+      agent_phone: string;
+      agent_email: string;
+      status: 'available' | 'sold' | 'rented' | 'under_negotiation';
+    };
+  };
+  url: string;
+}
+
+const { property, url } = Astro.props;
+const { data } = property;
+
+// Map property type to Schema.org types
+const typeMap: Record<string, string> = {
+  house: 'SingleFamilyResidence',
+  apartment: 'Apartment',
+  land: 'Place',
+  commercial: 'Place',
+  shop: 'Place',
+};
+const placeType = typeMap[data.property_type] || 'Place';
+
+// Map business function
+const businessFunction = data.listing_type === 'buy'
+  ? 'http://purl.org/goodrelations/v1#Sell'
+  : 'http://purl.org/goodrelations/v1#LeaseOut';
+
+// Map availability
+const availabilityMap = {
+  available: 'https://schema.org/InStock',
+  sold: 'https://schema.org/OutOfStock',
+  rented: 'https://schema.org/OutOfStock',
+  under_negotiation: 'https://schema.org/InStoreOnly',
+};
+const availability = availabilityMap[data.status] || 'https://schema.org/InStock';
+
+// Images resolution
+const featuredImageSrc = data.featured_image?.src
+  ? (data.featured_image.src.startsWith('http') ? data.featured_image.src : `${SITE_URL}${data.featured_image.src}`)
+  : '';
+
+const galleryImageUrls = (data.gallery_images || []).map((img) =>
+  img.src.startsWith('http') ? img.src : `${SITE_URL}${img.src}`
+);
+const allImages = [featuredImageSrc, ...galleryImageUrls].filter(Boolean);
+
+// Area resolution
+const areaSqft = data.built_up_area_sqft || data.carpet_area_sqft || data.land_area_sqft || data.shop_area_sqft;
+
+// Build the About Object
+const aboutObject: Record<string, any> = {
+  "@type": placeType,
+  "name": data.title,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": data.address,
+    "addressLocality": data.city,
+    "addressRegion": data.state,
+    "postalCode": data.postal_code,
+    "addressCountry": "IN"
+  }
+};
+
+if (data.bedrooms) aboutObject.numberOfBedrooms = data.bedrooms;
+if (data.bathrooms) aboutObject.numberOfBathroomsTotal = data.bathrooms;
+if (areaSqft) {
+  aboutObject.floorSize = {
+    "@type": "QuantitativeValue",
+    "value": areaSqft,
+    "unitCode": "FTK" // Square feet
+  };
+}
+
+// Graph Definition
+const graph = [
+  {
+    "@type": "RealEstateListing",
+    "@id": `${url}#listing`,
+    "name": data.title,
+    "url": url,
+    "datePosted": data.published_date.toISOString(),
+    "description": data.description,
+    "image": allImages,
+    "offers": {
+      "@type": "Offer",
+      "price": data.price,
+      "priceCurrency": "INR",
+      "availability": availability,
+      "businessFunction": businessFunction,
+    },
+    "about": aboutObject
+  },
+  {
+    "@type": "RealEstateAgent",
+    "@id": `${SITE_URL}/#agent`,
+    "name": data.agent_name,
+    "telephone": data.agent_phone,
+    "email": data.agent_email,
+    "url": SITE_URL,
+    "image": `${SITE_URL}/agent-avatar.jpg`
+  },
+  {
+    "@type": "BreadcrumbList",
+    "@id": `${url}#breadcrumb`,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": SITE_URL
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Properties",
+        "item": `${SITE_URL}/properties/`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": data.title,
+        "item": url
+      }
+    ]
+  }
+];
+
+const schemaData = {
+  "@context": "https://schema.org",
+  "@graph": graph
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

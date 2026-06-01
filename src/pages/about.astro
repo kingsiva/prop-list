@@ -1,0 +1,186 @@
+---
+import { getEntry } from 'astro:content';
+import { Picture } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
+import Button from '../components/ui/Button.astro';
+import agentPhoto from '../assets/images/agent-rajesh.png';
+import aboutHero from '../assets/images/about-hero.png';
+
+// Fetch the agent profile details
+const entry = await getEntry('settings', 'agent-profile');
+const agent = entry?.data || {
+  agent_name: 'Rajesh Kumar',
+  agent_designation: 'Senior Property Consultant',
+  experience_years: 15,
+  properties_sold: 500,
+  bio: 'With over 15 years of experience in the real estate industry, I have helped hundreds of families find their dream homes and guided investors to make smart property decisions.',
+  agent_phone: '+91 98765 43210',
+  agent_email: 'rajesh@premierproperties.in',
+  office_address: '12, Royal Plaza, Near Collectorate Office',
+  office_city: 'Coimbatore',
+  office_state: 'Tamil Nadu',
+};
+---
+
+<BaseLayout title={`About ${agent.agent_name}`} description={agent.agent_designation}>
+  <Fragment slot="head">
+    <SEOHead title={`About ${agent.agent_name} | Premier Properties`} description={agent.agent_designation} />
+  </Fragment>
+
+  <!-- Hero Banner Section -->
+  <section class="relative bg-stone-950 text-white py-20 md:py-28 overflow-hidden border-b border-stone-900">
+    <div class="absolute inset-0 z-0">
+      <Picture
+        src={aboutHero}
+        widths={[600, 1200, 1920]}
+        sizes="100vw"
+        formats={['avif', 'webp']}
+        alt="Premier Properties Office"
+        class="w-full h-full object-cover opacity-25"
+        loading="eager"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-transparent"></div>
+    </div>
+    
+    <div class="container-site relative z-10 text-center max-w-3xl mx-auto space-y-4">
+      <h1 class="text-4xl md:text-5xl font-extrabold font-display tracking-tight text-white leading-none">
+        About Rajesh Kumar
+      </h1>
+      <p class="text-accent-400 text-base md:text-lg font-semibold uppercase tracking-wider mt-2">
+        {agent.agent_designation}
+      </p>
+      <div class="w-12 h-1 bg-accent-500 mx-auto rounded mt-4"></div>
+    </div>
+  </section>
+
+  <!-- Bio & Portrait Section -->
+  <section class="py-16 md:py-24 bg-white">
+    <div class="container-site">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        
+        <!-- Left: Portrait Card & Personal Note -->
+        <div class="lg:col-span-5 space-y-8 lg:sticky lg:top-8">
+          <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-xl border-8 border-stone-100 bg-stone-50">
+            <Picture
+              src={agentPhoto}
+              widths={[400, 800]}
+              sizes="(max-width: 1024px) 100vw, 400px"
+              formats={['avif', 'webp']}
+              alt={agent.agent_name}
+              class="w-full h-full object-cover"
+              loading="eager"
+            />
+            <div class="absolute bottom-4 left-4 bg-accent-900/90 border border-accent-500/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md">
+              ESTD 2011
+            </div>
+          </div>
+          
+          <div class="bg-stone-50 rounded-2xl p-6 border border-stone-200/50 space-y-4">
+            <p class="text-stone-700 italic font-medium leading-relaxed text-sm">
+              "Every listing in my portfolio is personally vetted and legally clear. Your peace of mind is my ultimate success metric."
+            </p>
+            <div class="flex items-center gap-3">
+              <div>
+                <span class="block text-sm font-bold text-stone-900 font-display">{agent.agent_name}</span>
+                <span class="block text-[10px] text-stone-400 font-semibold uppercase tracking-wider">{agent.agent_designation}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Biography & stats -->
+        <div class="lg:col-span-7 space-y-8 text-stone-600 leading-relaxed font-normal">
+          <div class="space-y-4">
+            <h2 class="text-2xl sm:text-3xl font-extrabold font-display text-stone-900 tracking-tight">
+              A Personal Approach to Real Estate
+            </h2>
+            <p class="text-lg text-stone-850 font-medium">
+              Real estate transactions are more than buying brick and land—it is building a future.
+            </p>
+            <p class="text-sm sm:text-base leading-relaxed">
+              With a career spanning over {agent.experience_years} years in the real estate market of Tamil Nadu, I have built my practice on a foundation of absolute transparency, legal clarity, and client advocacy. Unlike large marketplaces, I represent and review each property in my portfolio personally. This means every plot of land, commercial showroom, or apartment you see listed here is hand-selected and verified.
+            </p>
+            <p class="text-sm sm:text-base leading-relaxed">
+              My goal is to make the buying, leasing, or renting process completely stress-free. Real estate transactions in India require careful coordination between legal counsels, builders, and local authorities. I assist my clients in navigating title checks, patta verifications, drafting agreements, and finalizing sale deeds.
+            </p>
+          </div>
+
+          <!-- Trust Numbers Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-8 border-y border-stone-200/60 my-8">
+            <div class="text-center bg-stone-50 rounded-xl p-4 border border-stone-100">
+              <span class="block text-3xl md:text-4xl font-extrabold font-display text-accent-700">{agent.experience_years}+</span>
+              <span class="block text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">Years Active</span>
+            </div>
+            <div class="text-center bg-stone-50 rounded-xl p-4 border border-stone-100">
+              <span class="block text-3xl md:text-4xl font-extrabold font-display text-accent-700">{agent.properties_sold}+</span>
+              <span class="block text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">Deeds Closed</span>
+            </div>
+            <div class="text-center bg-stone-50 rounded-xl p-4 border border-stone-100">
+              <span class="block text-3xl md:text-4xl font-extrabold font-display text-accent-700">100%</span>
+              <span class="block text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">Clear Titles</span>
+            </div>
+            <div class="text-center bg-stone-50 rounded-xl p-4 border border-stone-100">
+              <span class="block text-3xl md:text-4xl font-extrabold font-display text-accent-700">1-on-1</span>
+              <span class="block text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">Direct Advisor</span>
+            </div>
+          </div>
+
+          <!-- Operating Values Bento Grid -->
+          <div class="space-y-6">
+            <h3 class="text-2xl font-bold font-display text-stone-900 tracking-tight">Our Core Operating Values</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-stone-50 border border-stone-200/50 rounded-xl p-5 space-y-3 hover:border-accent-500/30 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center font-bold">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <h4 class="font-bold text-stone-900 font-display text-sm">Legal Transparency</h4>
+                <p class="text-stone-500 text-xs leading-relaxed">
+                  We only represent properties that have verified ownership history, approved DTCP/RERA licenses, and clean title deeds.
+                </p>
+              </div>
+
+              <div class="bg-stone-50 border border-stone-200/50 rounded-xl p-5 space-y-3 hover:border-accent-500/30 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center font-bold">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                </div>
+                <h4 class="font-bold text-stone-900 font-display text-sm">Direct Agent Access</h4>
+                <p class="text-stone-500 text-xs leading-relaxed">
+                  You deal directly with me. No junior staff, no middle brokers, and no mixed messages. Absolute clarity from day one.
+                </p>
+              </div>
+
+              <div class="bg-stone-50 border border-stone-200/50 rounded-xl p-5 space-y-3 hover:border-accent-500/30 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center font-bold">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 0c2.485 0 4.5 4.03 4.5 9s-2.015 9-4.5 9" />
+                  </svg>
+                </div>
+                <h4 class="font-bold text-stone-900 font-display text-sm">Enduring Trust</h4>
+                <p class="text-stone-500 text-xs leading-relaxed">
+                  We look beyond a single transaction to build lifelong partnerships, supporting your property goals across generations.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Call to Action buttons -->
+          <div class="pt-8 flex flex-col sm:flex-row items-center gap-4">
+            <Button variant="primary" href="/contact/" class="w-full sm:w-auto text-center justify-center">
+              Contact Me Today
+            </Button>
+            <Button variant="outline" href="/properties/" class="w-full sm:w-auto text-center justify-center">
+              Browse My Listings
+            </Button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>

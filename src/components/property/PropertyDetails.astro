@@ -1,0 +1,198 @@
+---
+import { FURNISHED_STATUS } from '../../lib/constants';
+import { getPropertyTypeLabel } from '../../lib/formatters';
+
+interface Props {
+  property: {
+    data: {
+      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
+      property_id: string;
+      listing_type: 'buy' | 'rent';
+      status: string;
+      price: number;
+      location: string;
+      city: string;
+      state: string;
+      postal_code: string;
+      
+      // Fields
+      bedrooms?: number;
+      bathrooms?: number;
+      toilets?: number;
+      built_up_area_sqft?: number;
+      plot_area_sqft?: number;
+      carpet_area_sqft?: number;
+      land_area_sqft?: number;
+      land_area_acres?: number;
+      shop_area_sqft?: number;
+      floors?: number;
+      floor_number?: number;
+      total_floors?: number;
+      balconies?: number;
+      parking_spaces?: number;
+      furnished_status?: 'unfurnished' | 'semi_furnished' | 'fully_furnished';
+      house_age?: number;
+      apartment_age?: number;
+      construction_year?: number;
+      maintenance_fee?: number;
+      zoning_type?: string;
+      facing?: string;
+      ownership_type?: string;
+      commercial_type?: string;
+      frontage_width?: number;
+      foot_traffic_rating?: 'low' | 'medium' | 'high';
+      survey_number?: string;
+      
+      // Approvals
+      dtcp_approved?: boolean;
+      rera_approved?: boolean;
+      approved_layout?: boolean;
+      construction_permission?: boolean;
+      commercial_license?: boolean;
+      occupancy_certificate?: boolean;
+    };
+  };
+}
+
+const { property } = Astro.props;
+const data = property.data || (property as any);
+
+interface DetailRow {
+  label: string;
+  value: string | number | boolean;
+  type: 'text' | 'boolean' | 'number' | 'currency' | 'area';
+}
+
+const specsGroup: DetailRow[] = [];
+const approvalsGroup: DetailRow[] = [];
+const financialsGroup: DetailRow[] = [];
+
+// 1. Specs Group
+specsGroup.push({ label: 'Property ID', value: data.property_id, type: 'text' });
+specsGroup.push({ label: 'Property Type', value: getPropertyTypeLabel(data.property_type), type: 'text' });
+specsGroup.push({ label: 'Listing Type', value: data.listing_type === 'buy' ? 'For Sale' : 'For Rent', type: 'text' });
+
+if (data.facing) specsGroup.push({ label: 'Facing', value: data.facing, type: 'text' });
+if (data.ownership_type) specsGroup.push({ label: 'Ownership Type', value: data.ownership_type, type: 'text' });
+
+// Add Area details
+if (data.built_up_area_sqft) specsGroup.push({ label: 'Built-up Area', value: data.built_up_area_sqft, type: 'area' });
+if (data.carpet_area_sqft) specsGroup.push({ label: 'Carpet Area', value: data.carpet_area_sqft, type: 'area' });
+if (data.land_area_sqft) specsGroup.push({ label: 'Plot Area (Sqft)', value: data.land_area_sqft, type: 'area' });
+if (data.land_area_acres) specsGroup.push({ label: 'Plot Area (Acres)', value: `${data.land_area_acres} Acres`, type: 'text' });
+if (data.plot_area_sqft) specsGroup.push({ label: 'Plot Area', value: data.plot_area_sqft, type: 'area' });
+if (data.shop_area_sqft) specsGroup.push({ label: 'Shop Area', value: data.shop_area_sqft, type: 'area' });
+
+// Add Rooms & Floors
+if (data.bedrooms !== undefined) specsGroup.push({ label: 'Bedrooms', value: data.bedrooms, type: 'number' });
+if (data.bathrooms !== undefined) specsGroup.push({ label: 'Bathrooms', value: data.bathrooms, type: 'number' });
+if (data.toilets !== undefined) specsGroup.push({ label: 'Toilets', value: data.toilets, type: 'number' });
+if (data.balconies !== undefined) specsGroup.push({ label: 'Balconies', value: data.balconies, type: 'number' });
+if (data.parking_spaces !== undefined) specsGroup.push({ label: 'Parking Spaces', value: data.parking_spaces, type: 'number' });
+if (data.floors !== undefined) specsGroup.push({ label: 'Total Floors', value: data.floors, type: 'number' });
+if (data.floor_number !== undefined) specsGroup.push({ label: 'Floor Number', value: data.floor_number === 0 ? 'Ground Floor' : data.floor_number, type: 'text' });
+if (data.total_floors !== undefined) specsGroup.push({ label: 'Total Floors in Bldg', value: data.total_floors, type: 'number' });
+
+if (data.furnished_status) {
+  specsGroup.push({
+    label: 'Furnished Status',
+    value: FURNISHED_STATUS[data.furnished_status] || data.furnished_status,
+    type: 'text'
+  });
+}
+
+// Add Commercial/Shop specific
+if (data.commercial_type) specsGroup.push({ label: 'Commercial Sub-type', value: data.commercial_type, type: 'text' });
+if (data.frontage_width !== undefined) specsGroup.push({ label: 'Road Frontage', value: `${data.frontage_width} feet`, type: 'text' });
+if (data.foot_traffic_rating) specsGroup.push({ label: 'Foot Traffic Rating', value: data.foot_traffic_rating, type: 'text' });
+if (data.zoning_type) specsGroup.push({ label: 'Zoning Code', value: data.zoning_type, type: 'text' });
+
+// 2. Approvals Group
+if (data.dtcp_approved !== undefined) approvalsGroup.push({ label: 'DTCP Approved Layout', value: data.dtcp_approved, type: 'boolean' });
+if (data.rera_approved !== undefined) approvalsGroup.push({ label: 'RERA Approved', value: data.rera_approved, type: 'boolean' });
+if (data.approved_layout !== undefined) approvalsGroup.push({ label: 'Layout Plan Approved', value: data.approved_layout, type: 'boolean' });
+if (data.construction_permission !== undefined) approvalsGroup.push({ label: 'Construction Permission', value: data.construction_permission, type: 'boolean' });
+if (data.commercial_license !== undefined) approvalsGroup.push({ label: 'Commercial License', value: data.commercial_license, type: 'boolean' });
+if (data.occupancy_certificate !== undefined) approvalsGroup.push({ label: 'Occupancy Certificate (OC)', value: data.occupancy_certificate, type: 'boolean' });
+if (data.survey_number) approvalsGroup.push({ label: 'Survey / Patta Number', value: data.survey_number, type: 'text' });
+
+// 3. Financials & Details
+if (data.price) financialsGroup.push({ label: 'Price Quote', value: data.price, type: 'currency' });
+if (data.maintenance_fee) financialsGroup.push({ label: 'Monthly Maintenance', value: data.maintenance_fee, type: 'currency' });
+if (data.house_age !== undefined) financialsGroup.push({ label: 'Property Age', value: `${data.house_age} Years`, type: 'text' });
+if (data.apartment_age !== undefined) financialsGroup.push({ label: 'Property Age', value: `${data.apartment_age} Years`, type: 'text' });
+if (data.construction_year) financialsGroup.push({ label: 'Year Built', value: data.construction_year, type: 'number' });
+
+const hasApprovals = approvalsGroup.length > 0;
+const hasFinancials = financialsGroup.length > 0;
+---
+
+<div class="bg-white rounded-xl border border-stone-200/60 p-6 shadow-sm">
+  <h3 class="text-lg font-bold font-display text-stone-900 mb-6">Property Details</h3>
+
+  <div class="space-y-8">
+    <!-- Specifications Section -->
+    <div>
+      <h4 class="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-4">Specifications</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 border-t border-stone-100 pt-4">
+        {specsGroup.map((row) => (
+          <div class="flex items-center justify-between text-sm py-1 border-b border-stone-50 sm:border-0">
+            <span class="text-stone-500 font-medium">{row.label}</span>
+            <span class="font-semibold text-stone-800">
+              {row.type === 'area' ? `${row.value.toLocaleString('en-IN')} sqft` : row.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Approvals & Documentation -->
+    {hasApprovals && (
+      <div>
+        <h4 class="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-4">Approvals & Legality</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 border-t border-stone-100 pt-4">
+          {approvalsGroup.map((row) => (
+            <div class="flex items-center justify-between text-sm py-1 border-b border-stone-50 sm:border-0">
+              <span class="text-stone-500 font-medium">{row.label}</span>
+              {row.type === 'boolean' ? (
+                row.value ? (
+                  <span class="inline-flex items-center gap-1 font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded text-xs border border-green-200/50">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                      <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                    </svg>
+                    Yes
+                  </span>
+                ) : (
+                  <span class="inline-flex items-center gap-1 font-bold text-stone-400 bg-stone-50 px-2 py-0.5 rounded text-xs border border-stone-200/20">
+                    No
+                  </span>
+                )
+              ) : (
+                <span class="font-semibold text-stone-800">{row.value}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Financials & History -->
+    {hasFinancials && (
+      <div>
+        <h4 class="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-4">Financials & Timeline</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 border-t border-stone-100 pt-4">
+          {financialsGroup.map((row) => (
+            <div class="flex items-center justify-between text-sm py-1 border-b border-stone-50 sm:border-0">
+              <span class="text-stone-500 font-medium">{row.label}</span>
+              <span class="font-semibold text-stone-800">
+                {row.type === 'currency'
+                  ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(row.value as number)
+                  : row.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</div>

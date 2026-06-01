@@ -1,0 +1,37 @@
+---
+import PropertyCard from './PropertyCard.astro';
+
+interface Props {
+  properties: any[];
+  columns?: 2 | 3;
+}
+
+const { properties, columns = 3 } = Astro.props;
+
+const gridClasses = [
+  'grid gap-6 w-full',
+  'grid-cols-1', // Mobile
+  'md:grid-cols-2', // Tablet/Medium
+  columns === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2' // Large screen
+].join(' ');
+---
+
+{
+  properties && properties.length > 0 ? (
+    <div class={gridClasses}>
+      {properties.map((property) => (
+        <PropertyCard property={property} />
+      ))}
+    </div>
+  ) : (
+    <div class="flex flex-col items-center justify-center text-center py-16 px-6 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200 w-full">
+      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-stone-100 text-stone-400 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+      </div>
+      <h3 class="text-base font-semibold text-stone-900 mb-1">No Properties Found</h3>
+      <p class="text-sm text-stone-500 max-w-xs">We couldn't find any properties matching your current criteria. Try adjusting your filters or check back later.</p>
+    </div>
+  )
+}

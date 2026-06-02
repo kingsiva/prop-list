@@ -1,37 +1,9 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import { SITE_URL, SITE_NAME } from '../../lib/constants';
 
 interface Props {
-  property: {
-    id: string;
-    data: {
-      title: string;
-      property_id: string;
-      description: string;
-      price: number;
-      listing_type: 'buy' | 'rent';
-      rental_type?: 'daily' | 'weekly' | 'monthly';
-      location: string;
-      address: string;
-      city: string;
-      state: string;
-      postal_code: string;
-      published_date: Date;
-      featured_image: { src: string };
-      gallery_images?: { src: string }[];
-      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
-      bedrooms?: number;
-      bathrooms?: number;
-      built_up_area_sqft?: number;
-      carpet_area_sqft?: number;
-      land_area_sqft?: number;
-      shop_area_sqft?: number;
-      agent_name: string;
-      agent_phone: string;
-      agent_email: string;
-      status: 'available' | 'sold' | 'rented' | 'under_negotiation';
-    };
-  };
+  property: CollectionEntry<'properties'>;
   url: string;
 }
 

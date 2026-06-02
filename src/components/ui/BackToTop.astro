@@ -34,8 +34,19 @@
       });
     };
 
-    // Listen to scroll events
-    window.addEventListener('scroll', toggleVisibility);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          toggleVisibility();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Listen to scroll events with passive optimization and requestAnimationFrame throttling
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     // Listen to click event
     btn.addEventListener('click', scrollToTop);

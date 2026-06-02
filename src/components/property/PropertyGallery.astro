@@ -39,7 +39,7 @@ const hasThumbnails = allImages.length > 1;
       {allImages.map((image, index) => (
         <button
           type="button"
-          class={`thumbnail-btn relative aspect-video rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-150 shrink-0 w-24 md:w-auto ${index === 0 ? 'border-accent-600 ring-2 ring-accent-100' : 'border-stone-200 hover:border-stone-400'}`}
+          class={`thumbnail-btn relative aspect-video rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-150 shrink-0 w-24 md:w-auto focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none ${index === 0 ? 'border-accent-600 ring-2 ring-accent-100' : 'border-stone-200 hover:border-stone-400'}`}
           data-image-index={index}
           data-image-src={image.src}
           aria-label={`View image ${index + 1}`}
@@ -66,7 +66,7 @@ const hasThumbnails = allImages.length > 1;
   >
     <button
       type="button"
-      class="lightbox-close absolute top-4 right-4 text-white hover:text-stone-300 p-2 focus:outline-none cursor-pointer"
+      class="lightbox-close absolute top-4 right-4 text-white hover:text-stone-300 p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-500 rounded-lg cursor-pointer"
       aria-label="Close lightbox"
     >
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">

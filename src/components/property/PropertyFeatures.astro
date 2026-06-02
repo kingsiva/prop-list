@@ -1,59 +1,9 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import { PROPERTY_FEATURES } from '../../lib/constants';
 
 interface Props {
-  property: {
-    data: {
-      features?: string[];
-      // All potential boolean keys
-      road_access?: boolean;
-      corner_plot?: boolean;
-      construction_permission?: boolean;
-      approved_layout?: boolean;
-      dtcp_approved?: boolean;
-      rera_approved?: boolean;
-      water_connection?: boolean;
-      electricity_connection?: boolean;
-      drainage_connection?: boolean;
-      fencing?: boolean;
-      boundary_wall?: boolean;
-      agricultural_land?: boolean;
-      residential_land?: boolean;
-      commercial_land?: boolean;
-      water_supply?: boolean;
-      electricity?: boolean;
-      drainage?: boolean;
-      borewell?: boolean;
-      septic_tank?: boolean;
-      solar_power?: boolean;
-      compound_wall?: boolean;
-      gated_property?: boolean;
-      lift_available?: boolean;
-      power_backup?: boolean;
-      security?: boolean;
-      gym?: boolean;
-      swimming_pool?: boolean;
-      clubhouse?: boolean;
-      children_play_area?: boolean;
-      visitor_parking?: boolean;
-      generator?: boolean;
-      internet_connectivity?: boolean;
-      conference_room?: boolean;
-      meeting_room?: boolean;
-      reception_area?: boolean;
-      cafeteria?: boolean;
-      warehouse_space?: boolean;
-      loading_area?: boolean;
-      truck_access?: boolean;
-      fire_safety_system?: boolean;
-      occupancy_certificate?: boolean;
-      commercial_license?: boolean;
-      storage_room?: boolean;
-      washroom?: boolean;
-      display_front?: boolean;
-      main_road_facing?: boolean;
-    };
-  };
+  property: CollectionEntry<'properties'>;
 }
 
 const { property } = Astro.props;

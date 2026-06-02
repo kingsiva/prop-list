@@ -1,57 +1,10 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import { FURNISHED_STATUS } from '../../lib/constants';
 import { getPropertyTypeLabel } from '../../lib/formatters';
 
 interface Props {
-  property: {
-    data: {
-      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
-      property_id: string;
-      listing_type: 'buy' | 'rent';
-      status: string;
-      price: number;
-      location: string;
-      city: string;
-      state: string;
-      postal_code: string;
-      
-      // Fields
-      bedrooms?: number;
-      bathrooms?: number;
-      toilets?: number;
-      built_up_area_sqft?: number;
-      plot_area_sqft?: number;
-      carpet_area_sqft?: number;
-      land_area_sqft?: number;
-      land_area_acres?: number;
-      shop_area_sqft?: number;
-      floors?: number;
-      floor_number?: number;
-      total_floors?: number;
-      balconies?: number;
-      parking_spaces?: number;
-      furnished_status?: 'unfurnished' | 'semi_furnished' | 'fully_furnished';
-      house_age?: number;
-      apartment_age?: number;
-      construction_year?: number;
-      maintenance_fee?: number;
-      zoning_type?: string;
-      facing?: string;
-      ownership_type?: string;
-      commercial_type?: string;
-      frontage_width?: number;
-      foot_traffic_rating?: 'low' | 'medium' | 'high';
-      survey_number?: string;
-      
-      // Approvals
-      dtcp_approved?: boolean;
-      rera_approved?: boolean;
-      approved_layout?: boolean;
-      construction_permission?: boolean;
-      commercial_license?: boolean;
-      occupancy_certificate?: boolean;
-    };
-  };
+  property: CollectionEntry<'properties'>;
 }
 
 const { property } = Astro.props;
@@ -96,7 +49,7 @@ if (data.total_floors !== undefined) specsGroup.push({ label: 'Total Floors in B
 if (data.furnished_status) {
   specsGroup.push({
     label: 'Furnished Status',
-    value: FURNISHED_STATUS[data.furnished_status] || data.furnished_status,
+    value: FURNISHED_STATUS[data.furnished_status as keyof typeof FURNISHED_STATUS] || data.furnished_status,
     type: 'text'
   });
 }

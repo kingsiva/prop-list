@@ -1,32 +1,9 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import { FURNISHED_STATUS } from '../../lib/constants';
 
 interface Props {
-  property: {
-    property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
-    data: {
-      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
-      bedrooms?: number;
-      bathrooms?: number;
-      built_up_area_sqft?: number;
-      plot_area_sqft?: number;
-      carpet_area_sqft?: number;
-      land_area_sqft?: number;
-      land_area_acres?: number;
-      shop_area_sqft?: number;
-      floors?: number;
-      floor_number?: number;
-      total_floors?: number;
-      parking_spaces?: number;
-      furnished_status?: 'unfurnished' | 'semi_furnished' | 'fully_furnished';
-      zoning_type?: string;
-      facing?: string;
-      ownership_type?: string;
-      commercial_type?: string;
-      frontage_width?: number;
-      foot_traffic_rating?: 'low' | 'medium' | 'high';
-    };
-  };
+  property: CollectionEntry<'properties'>;
 }
 
 const { property } = Astro.props;
@@ -96,7 +73,7 @@ if (type === 'house' || type === 'apartment') {
     stats.push({
       icon: `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5" /></svg>`,
       label: 'Furnishing',
-      value: FURNISHED_STATUS[data.furnished_status] || data.furnished_status
+      value: FURNISHED_STATUS[data.furnished_status as keyof typeof FURNISHED_STATUS] || data.furnished_status
     });
   }
 }

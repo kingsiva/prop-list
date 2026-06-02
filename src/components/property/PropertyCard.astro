@@ -1,33 +1,12 @@
 ---
 import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
 import Badge from '../ui/Badge.astro';
 import { formatPriceShort, getPriceDisplay, getPropertyTypeLabel } from '../../lib/formatters';
 import { getPropertyUrl } from '../../lib/utils';
 
 interface Props {
-  property: {
-    id: string;
-    data: {
-      title: string;
-      slug: string;
-      property_type: 'land' | 'house' | 'apartment' | 'commercial' | 'shop';
-      listing_type: 'buy' | 'rent';
-      rental_type?: 'daily' | 'weekly' | 'monthly';
-      price: number;
-      location: string;
-      city: string;
-      status: 'available' | 'sold' | 'rented' | 'under_negotiation';
-      featured_image: ImageMetadata;
-      bedrooms?: number;
-      bathrooms?: number;
-      built_up_area_sqft?: number;
-      carpet_area_sqft?: number;
-      land_area_sqft?: number;
-      shop_area_sqft?: number;
-      parking_spaces?: number;
-      features?: string[];
-    };
-  };
+  property: CollectionEntry<'properties'>;
 }
 
 const { property } = Astro.props;
